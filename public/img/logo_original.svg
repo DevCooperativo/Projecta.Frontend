@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <!-- Flask stroke gradient -->
+    <linearGradient id="gFlask" x1="120" y1="40" x2="420" y2="470" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#36D7FF"/>
+      <stop offset="0.45" stop-color="#2E7BFF"/>
+      <stop offset="1" stop-color="#4A26C9"/>
+    </linearGradient>
+
+    <!-- Inner highlight -->
+    <linearGradient id="gHighlight" x1="155" y1="90" x2="360" y2="470" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A7F3FF" stop-opacity="0.65"/>
+      <stop offset="0.45" stop-color="#6DCBFF" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#6B3CFF" stop-opacity="0.10"/>
+    </linearGradient>
+
+    <!-- Fluid gradients -->
+    <linearGradient id="gFluidTop" x1="140" y1="300" x2="420" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF78D6" stop-opacity="0.95"/>
+      <stop offset="0.6" stop-color="#B85BFF" stop-opacity="0.90"/>
+      <stop offset="1" stop-color="#7B4BFF" stop-opacity="0.90"/>
+    </linearGradient>
+
+    <linearGradient id="gFluidBottom" x1="120" y1="350" x2="430" y2="490" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8D4BFF" stop-opacity="0.95"/>
+      <stop offset="0.55" stop-color="#5C46FF" stop-opacity="0.96"/>
+      <stop offset="1" stop-color="#3B2BB8" stop-opacity="0.98"/>
+    </linearGradient>
+
+    <!-- Molecule gradients -->
+    <radialGradient id="gNode" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#7FF4FF"/>
+      <stop offset="0.55" stop-color="#2FB7FF"/>
+      <stop offset="1" stop-color="#2B3CCB"/>
+    </radialGradient>
+
+    <radialGradient id="gNodeDark" cx="40%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#79E7FF"/>
+      <stop offset="0.5" stop-color="#3A7DFF"/>
+      <stop offset="1" stop-color="#2A1A9A"/>
+    </radialGradient>
+
+    <!-- Soft glow -->
+    <filter id="fGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feColorMatrix in="b" type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.35 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Clip to inside of flask -->
+    <clipPath id="clipInside">
+      <!-- inner cavity shape -->
+      <path d="
+        M215 82
+        C215 68 226 57 240 57
+        H272
+        C286 57 297 68 297 82
+        V170
+        C297 177 300 184 305 190
+        L390 318
+        C404 339 412 364 412 390
+        V412
+        C412 440 389 463 361 463
+        H151
+        C123 463 100 440 100 412
+        V390
+        C100 364 108 339 122 318
+        L207 190
+        C212 184 215 177 215 170
+        V82
+        Z"/>
+    </clipPath>
+
+    <!-- Clip for fluid (still inside cavity) -->
+    <clipPath id="clipFluid">
+      <use href="#cavity"/>
+    </clipPath>
+  </defs>
+
+  <!-- Define cavity path once for reuse -->
+  <path id="cavity" d="
+    M215 82
+    C215 68 226 57 240 57
+    H272
+    C286 57 297 68 297 82
+    V170
+    C297 177 300 184 305 190
+    L390 318
+    C404 339 412 364 412 390
+    V412
+    C412 440 389 463 361 463
+    H151
+    C123 463 100 440 100 412
+    V390
+    C100 364 108 339 122 318
+    L207 190
+    C212 184 215 177 215 170
+    V82
+    Z" fill="none"/>
+
+  <!-- FLASK OUTLINE -->
+  <path d="
+    M205 78
+    C205 58 221 42 241 42
+    H271
+    C291 42 307 58 307 78
+    V168
+    C307 172 309 178 313 184
+    L402 318
+    C420 345 431 377 431 411
+    V417
+    C431 455 400 486 362 486
+    H150
+    C112 486 81 455 81 417
+    V411
+    C81 377 92 345 110 318
+    L199 184
+    C203 178 205 172 205 168
+    V78
+    Z"
+    stroke="url(#gFlask)" stroke-width="18" stroke-linejoin="round" />
+
+  <!-- Neck rim -->
+  <path d="M205 78 C205 58 221 42 241 42 H271 C291 42 307 58 307 78"
+        stroke="url(#gFlask)" stroke-width="22" stroke-linecap="round"/>
+
+  <!-- Inner highlight stroke -->
+  <path d="
+    M225 92
+    C225 78 235 67 249 67
+    H263
+    C277 67 287 78 287 92
+    V171
+    C287 182 292 193 299 203
+    L377 321
+    C389 339 396 361 396 384
+    V408
+    C396 428 380 444 360 444
+    H153
+    C133 444 117 428 117 408
+    V384
+    C117 361 124 339 136 321
+    L214 203
+    C221 193 225 182 225 171
+    V92
+    Z"
+    stroke="url(#gHighlight)" stroke-width="10" stroke-linejoin="round" opacity="0.9"/>
+
+  <!-- Bubbles in neck -->
+  <circle cx="256" cy="126" r="10" fill="url(#gNode)" opacity="0.95"/>
+  <circle cx="256" cy="176" r="17" fill="url(#gNode)" opacity="0.95"/>
+
+  <!-- CONTENTS (clipped inside cavity) -->
+  <g clip-path="url(#clipInside)">
+    <!-- Fluid: top wave -->
+    <path d="
+      M86 334
+      C140 300 200 314 256 332
+      C312 350 372 360 426 330
+      V520 H86 V334 Z"
+      fill="url(#gFluidTop)" opacity="0.92"/>
+
+    <!-- Fluid: bottom wave -->
+    <path d="
+      M86 382
+      C150 352 208 370 256 392
+      C304 414 366 438 426 400
+      V520 H86 V382 Z"
+      fill="url(#gFluidBottom)" opacity="0.96"/>
+
+    <!-- Soft inner glow spots -->
+    <g opacity="0.35" filter="url(#fGlow)">
+      <circle cx="170" cy="395" r="18" fill="#B9F7FF"/>
+      <circle cx="220" cy="432" r="12" fill="#D4C9FF"/>
+      <circle cx="300" cy="430" r="16" fill="#B9F7FF"/>
+      <circle cx="350" cy="405" r="14" fill="#E7B6FF"/>
+      <circle cx="140" cy="430" r="10" fill="#FAD0FF"/>
+    </g>
+
+    <!-- Molecules network (above fluid) -->
+    <g stroke="url(#gFlask)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
+      <!-- connections -->
+      <path d="M256 235 L190 285"/>
+      <path d="M256 235 L322 285"/>
+      <path d="M256 235 L256 312"/>
+      <path d="M256 312 L208 358"/>
+      <path d="M256 312 L304 358"/>
+    </g>
+
+    <!-- nodes -->
+    <g filter="url(#fGlow)">
+      <circle cx="256" cy="235" r="20" fill="url(#gNode)"/>
+      <circle cx="190" cy="285" r="18" fill="url(#gNodeDark)"/>
+      <circle cx="322" cy="285" r="18" fill="url(#gNodeDark)"/>
+      <circle cx="256" cy="312" r="22" fill="url(#gNode)"/>
+      <circle cx="208" cy="358" r="16" fill="url(#gNodeDark)"/>
+      <circle cx="304" cy="358" r="16" fill="url(#gNodeDark)"/>
+    </g>
+
+    <!-- Extra tiny bubbles -->
+    <g opacity="0.35">
+      <circle cx="120" cy="410" r="10" fill="#FFFFFF"/>
+      <circle cx="165" cy="455" r="8" fill="#FFFFFF"/>
+      <circle cx="240" cy="462" r="11" fill="#FFFFFF"/>
+      <circle cx="320" cy="462" r="9" fill="#FFFFFF"/>
+      <circle cx="392" cy="438" r="12" fill="#FFFFFF"/>
+      <circle cx="410" cy="395" r="8" fill="#FFFFFF"/>
+    </g>
+  </g>
+</svg>
