@@ -1,10 +1,18 @@
 import { createContext, useContext } from "react";
-import { RootState } from "@/state/store";
+
+export interface AuthUser {
+    id?: number;
+    name?: string;
+    email?: string;
+    profileType: 'admin' | 'professor' | 'student';
+}
 
 export interface AuthContextType {
-    account: RootState["account"];
-    getData: () => Promise<unknown>;
-    getCompany: () => Promise<unknown>;
+    isLoggedIn: boolean;
+    token: string | null;
+    user: AuthUser | null;
+    login: (token: string, user: AuthUser) => void;
+    logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({} as AuthContextType);

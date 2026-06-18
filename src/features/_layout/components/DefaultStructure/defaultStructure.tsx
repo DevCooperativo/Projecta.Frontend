@@ -1,13 +1,18 @@
-import type { ReactNode } from "react"
-import React from "react"
+import { type ReactNode } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Navbar } from '../Navbar';
 
 export interface IDefaultStructure {
-    navbar: ReactNode
+    children?: ReactNode;
 }
-export const DefaultStructure = ({ navbar }: IDefaultStructure) => {
+
+export const DefaultStructure = ({ children }: IDefaultStructure) => {
     return (
-        <React.Fragment>
-            {navbar}
-        </React.Fragment>
-    )
-}
+        <>
+            <Navbar />
+            <main className="container py-4">
+                {children ?? <Outlet />}
+            </main>
+        </>
+    );
+};

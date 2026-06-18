@@ -1,51 +1,44 @@
-import { ReactNode, useCallback, useEffect } from "react";
-import { AuthContext } from "./useAuth";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/state/store";
-import { getData, getCompany } from "@/state/account/accountSlice";
+import { type ReactNode, useState } from "react";
+import { AuthContext, type AuthUser } from "./useAuth";
+import { TOKEN_KEY_STORAGE } from "@/api/httpClient";
 
 interface AuthProviderProps {
     children: ReactNode;
 }
 
+const USER_KEY = 'projecta_user';
+
+function loadUser(): AuthUser | null {
+    try {
+        const raw = localStorage.getItem(USER_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+}
+
 export function AuthProvider({ children }: AuthProviderProps) {
-    const dispatch = useDispatch<AppDispatch>();
-    const account = useSelector((state: RootState) => state.account);
+    const [token, setToken] = useState<string | null>(
+        () => localStorage.getItem(TOKEN_KEY_STORAGE)
+    );
+    const [user, setUser] = useState<AuthUser | null>(loadUser);
 
-    const getDataFn = useCallback(async () => {
-        return await dispatch(getData()).unwrap();
-    }, [dispatch]);
+    const login = (newToken: string, newUser: AuthUser) => {
+        localStorage.setItem(TOKEN_KEY_STORAGE, newToken);
+        localStorage.setItem(USER_KEY, JSON.stringify(newUser));
+        setToken(newToken);
+        setUser(newUser);
+    };
 
-    const getCompanyFn = useCallback(async () => {
-        return await dispatch(getCompany()).unwrap();
-    }, [dispatch]);
-    useEffect(() => {
-        const getInformation = async () => {
-            await getDataFn()
-        }
-        getInformation()
-    }, [getDataFn])
+    const logout = () => {
+        localStorage.removeItem(TOKEN_KEY_STORAGE);
+        localStorage.removeItem(USER_KEY);
+        setToken(null);
+        setUser(null);
+    };
 
-    useEffect(() => {
-        const loadCompanyData = async () => {
-            if (account.accessState !== "authenticated")
-                return
-            if (account.role !== "company")
-                return
-            if (account.registrationState !== "non_initialized")
-                return
-            await getCompanyFn()
-        }
-        loadCompanyData()
-    }, [account.accessState, account.registrationState, account.role, getCompanyFn])
     return (
-        <AuthContext.Provider
-            value={{
-                account,
-                getData: getDataFn,
-                getCompany: getCompanyFn,
-            }}
-        >
+        <AuthContext.Provider value={{ isLoggedIn: !!token, token, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
