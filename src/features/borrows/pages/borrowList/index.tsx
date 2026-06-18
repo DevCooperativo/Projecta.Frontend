@@ -25,14 +25,14 @@ export const BorrowList = () => {
             startPeriod: dateFrom || undefined,
             endPeriod: dateTo || undefined,
         })
-            .then(setBorrows)
+            .then(x => x.data && setBorrows(x.data))
             .catch(() => setError('Não foi possível carregar os empréstimos.'))
             .finally(() => setLoading(false));
     };
 
     useEffect(() => {
         fetchBorrows();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const filtered = useMemo(() => {

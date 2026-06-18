@@ -16,7 +16,7 @@ export const BorrowClose = () => {
     useEffect(() => {
         if (!id) return;
         borrowsServices.get(Number(id))
-            .then(setBorrow)
+            .then(x=>x.data && setBorrow(x.data))
             .catch(() => setBorrow(null))
             .finally(() => setLoading(false));
     }, [id]);

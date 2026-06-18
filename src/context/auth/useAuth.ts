@@ -1,17 +1,17 @@
+import type { UserProfileType } from "@/state/userSlice";
 import { createContext, useContext } from "react";
 
 export interface AuthUser {
-    id?: number;
-    name?: string;
-    email?: string;
-    profileType: 'admin' | 'professor' | 'student';
+    id: number | undefined;
+    name: string | undefined;
+    email: string | undefined;
+    profileType: UserProfileType | undefined;
 }
 
 export interface AuthContextType {
     isLoggedIn: boolean;
-    token: string | null;
     user: AuthUser | null;
-    login: (token: string, user: AuthUser) => void;
+    login: (user: AuthUser) => void;
     logout: () => void;
 }
 

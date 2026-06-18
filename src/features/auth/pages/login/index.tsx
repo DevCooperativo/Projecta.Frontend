@@ -37,7 +37,7 @@ export const Login = () => {
                 password: data.password,
                 profileType: data.profile,
             });
-            login(response.token, {
+            login({
                 id: response.id,
                 name: response.name,
                 email: response.email ?? data.email,

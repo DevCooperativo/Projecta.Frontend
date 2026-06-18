@@ -17,7 +17,7 @@ export const ProfessorDetail = () => {
     useEffect(() => {
         if (!id) return;
         professorsServices.get(Number(id))
-            .then(setProfessor)
+            .then(x=>x.data && setProfessor(x.data))
             .catch(() => setProfessor(null))
             .finally(() => setLoading(false));
     }, [id]);

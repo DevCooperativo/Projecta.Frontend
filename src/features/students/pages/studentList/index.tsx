@@ -23,7 +23,7 @@ export const StudentList = () => {
 
     useEffect(() => {
         studentsServices.list()
-            .then(setStudents)
+            .then(x => x.data && setStudents(x.data))
             .catch(() => setError('Não foi possível carregar os alunos.'))
             .finally(() => setLoading(false));
     }, []);

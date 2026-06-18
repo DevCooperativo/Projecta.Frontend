@@ -17,7 +17,7 @@ export const ProfessorList = () => {
 
     useEffect(() => {
         professorsServices.list()
-            .then(setProfessors)
+            .then(x => x.data && setProfessors(x.data))
             .catch(() => setError('Não foi possível carregar os professores.'))
             .finally(() => setLoading(false));
     }, []);

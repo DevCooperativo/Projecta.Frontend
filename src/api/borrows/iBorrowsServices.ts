@@ -1,3 +1,5 @@
+import type { ApiResponse } from '../abstractions/apiResponse';
+
 export interface BorrowResponse {
     id: number;
     equipmentId: number;
@@ -25,10 +27,10 @@ export interface ListBorrowsParams {
 }
 
 export interface IBorrowsServices {
-    list(params?: ListBorrowsParams): Promise<BorrowResponse[]>;
-    get(id: number): Promise<BorrowResponse>;
-    create(data: CreateBorrowRequest): Promise<BorrowResponse>;
-    update(id: number, data: { equipmentId: number }): Promise<BorrowResponse>;
-    returnBorrow(id: number): Promise<void>;
-    remove(id: number): Promise<void>;
+    list(params?: ListBorrowsParams): Promise<ApiResponse<BorrowResponse[]>>;
+    get(id: number): Promise<ApiResponse<BorrowResponse>>;
+    create(data: CreateBorrowRequest): Promise<ApiResponse<BorrowResponse>>;
+    update(id: number, data: { equipmentId: number }): Promise<ApiResponse<BorrowResponse>>;
+    returnBorrow(id: number): Promise<ApiResponse<void>>;
+    remove(id: number): Promise<ApiResponse<void>>;
 }

@@ -6,11 +6,15 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './context/auth/authProvider.tsx'
+import { Provider } from 'react-redux'
+import { store } from './state/store.ts'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </StrictMode>,
+    <StrictMode>
+        <Provider store={store}>
+            <AuthProvider>
+                <App />
+            </AuthProvider>
+        </Provider>
+    </StrictMode>,
 )

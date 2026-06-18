@@ -23,7 +23,7 @@ export const StudentDetail = () => {
     useEffect(() => {
         if (!id) return;
         studentsServices.get(Number(id))
-            .then(setStudent)
+            .then(x=>x.data && setStudent(x.data))
             .catch(() => setStudent(null))
             .finally(() => setLoading(false));
     }, [id]);

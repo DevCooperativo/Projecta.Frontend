@@ -1,3 +1,5 @@
+import type { ApiResponse } from '../abstractions/apiResponse';
+
 export interface AdministratorResponse {
     id: number;
     email: string;
@@ -16,9 +18,9 @@ export interface UpdateAdministratorRequest {
 }
 
 export interface IAdministratorsServices {
-    list(): Promise<AdministratorResponse[]>;
-    get(id: number): Promise<AdministratorResponse>;
-    create(data: CreateAdministratorRequest): Promise<AdministratorResponse>;
-    update(id: number, data: UpdateAdministratorRequest): Promise<AdministratorResponse>;
-    remove(id: number): Promise<void>;
+    list(): Promise<ApiResponse<AdministratorResponse[]>>;
+    get(id: number): Promise<ApiResponse<AdministratorResponse>>;
+    create(data: CreateAdministratorRequest): Promise<ApiResponse<AdministratorResponse>>;
+    update(id: number, data: UpdateAdministratorRequest): Promise<ApiResponse<AdministratorResponse>>;
+    remove(id: number): Promise<ApiResponse<void>>;
 }

@@ -1,3 +1,5 @@
+import type { ApiResponse } from '../abstractions/apiResponse';
+
 export interface StudentResponse {
     id: number;
     name: string;
@@ -30,9 +32,9 @@ export interface UpdateStudentRequest {
 }
 
 export interface IStudentsServices {
-    list(): Promise<StudentResponse[]>;
-    get(id: number): Promise<StudentResponse>;
-    create(data: CreateStudentRequest): Promise<StudentResponse>;
-    update(id: number, data: UpdateStudentRequest): Promise<StudentResponse>;
-    remove(id: number): Promise<void>;
+    list(): Promise<ApiResponse<StudentResponse[]>>;
+    get(id: number): Promise<ApiResponse<StudentResponse>>;
+    create(data: CreateStudentRequest): Promise<ApiResponse<StudentResponse>>;
+    update(id: number, data: UpdateStudentRequest): Promise<ApiResponse<StudentResponse>>;
+    remove(id: number): Promise<ApiResponse<void>>;
 }

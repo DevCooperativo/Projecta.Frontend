@@ -1,3 +1,4 @@
+import type { ApiResponse } from '@/api/abstractions/apiResponse';
 import { httpClient } from '../../httpClient';
 import type {
     IBorrowsServices,
@@ -7,31 +8,33 @@ import type {
 } from '../iBorrowsServices';
 
 export const borrowsServices: IBorrowsServices = {
-    async list(params?: ListBorrowsParams): Promise<BorrowResponse[]> {
-        const response = await httpClient.get<BorrowResponse[]>('/api/borrow', { params });
+    async list(params?: ListBorrowsParams): Promise<ApiResponse<BorrowResponse[]>> {
+        const response = await httpClient.get<ApiResponse<BorrowResponse[]>>('/api/borrow', { params });
         return response.data;
     },
 
-    async get(id: number): Promise<BorrowResponse> {
-        const response = await httpClient.get<BorrowResponse>(`/api/borrow/${id}`);
+    async get(id: number): Promise<ApiResponse<BorrowResponse>> {
+        const response = await httpClient.get<ApiResponse<BorrowResponse>>(`/api/borrow/${id}`);
         return response.data;
     },
 
-    async create(data: CreateBorrowRequest): Promise<BorrowResponse> {
-        const response = await httpClient.post<BorrowResponse>('/api/borrow', data);
+    async create(data: CreateBorrowRequest): Promise<ApiResponse<BorrowResponse>> {
+        const response = await httpClient.post<ApiResponse<BorrowResponse>>('/api/borrow', data);
         return response.data;
     },
 
-    async update(id: number, data: { equipmentId: number }): Promise<BorrowResponse> {
-        const response = await httpClient.put<BorrowResponse>(`/api/borrow/${id}`, data);
+    async update(id: number, data: { equipmentId: number }): Promise<ApiResponse<BorrowResponse>> {
+        const response = await httpClient.put<ApiResponse<BorrowResponse>>(`/api/borrow/${id}`, data);
         return response.data;
     },
 
-    async returnBorrow(id: number): Promise<void> {
-        await httpClient.post(`/api/borrow/return/${id}`);
+    async returnBorrow(id: number): Promise<ApiResponse<void>> {
+        const response = await httpClient.post<ApiResponse<void>>(`/api/borrow/return/${id}`);
+        return response.data;
     },
 
-    async remove(id: number): Promise<void> {
-        await httpClient.delete(`/api/borrow/${id}`);
+    async remove(id: number): Promise<ApiResponse<void>> {
+        const response = await httpClient.delete<ApiResponse<void>>(`/api/borrow/${id}`);
+        return response.data;
     },
 };

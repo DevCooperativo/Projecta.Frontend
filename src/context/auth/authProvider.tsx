@@ -1,44 +1,44 @@
-import { type ReactNode, useState } from "react";
+import { useEffect, type ReactNode } from "react";
 import { AuthContext, type AuthUser } from "./useAuth";
-import { TOKEN_KEY_STORAGE } from "@/api/httpClient";
+import type { AppDispatch, RootState } from "@/state/store";
+import { useDispatch, useSelector } from "react-redux";
+import { userLogin, userLogout } from "@/state/userSlice";
+import { authServices } from "@/api/auth/implementation/authServices";
 
 interface AuthProviderProps {
     children: ReactNode;
 }
 
-const USER_KEY = 'projecta_user';
-
-function loadUser(): AuthUser | null {
-    try {
-        const raw = localStorage.getItem(USER_KEY);
-        return raw ? JSON.parse(raw) : null;
-    } catch {
-        return null;
-    }
-}
-
 export function AuthProvider({ children }: AuthProviderProps) {
-    const [token, setToken] = useState<string | null>(
-        () => localStorage.getItem(TOKEN_KEY_STORAGE)
-    );
-    const [user, setUser] = useState<AuthUser | null>(loadUser);
-
-    const login = (newToken: string, newUser: AuthUser) => {
-        localStorage.setItem(TOKEN_KEY_STORAGE, newToken);
-        localStorage.setItem(USER_KEY, JSON.stringify(newUser));
-        setToken(newToken);
-        setUser(newUser);
+    const user = useSelector((state: RootState) => state.user)
+    const dispatch = useDispatch<AppDispatch>()
+    const login = (newUser: AuthUser) => {
+        dispatch(userLogin(newUser))
     };
 
     const logout = () => {
-        localStorage.removeItem(TOKEN_KEY_STORAGE);
-        localStorage.removeItem(USER_KEY);
-        setToken(null);
-        setUser(null);
+        dispatch(userLogout())
     };
 
+    useEffect(() => {
+        const retrieveUserData = async () => {
+            try {
+                const result = await authServices.me()
+
+                if (result.type === "success" && result.data)
+                    dispatch(userLogin(result.data))
+            }
+            catch (ex) {
+                console.log(ex)
+            }
+        }
+        if (!user.isAuthenticated)
+            retrieveUserData()
+        return () => { }
+    }, [dispatch, user.isAuthenticated])
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn: !!token, token, user, login, logout }}>
+        <AuthContext.Provider value={{ isLoggedIn: user.isAuthenticated, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

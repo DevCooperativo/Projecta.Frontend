@@ -16,7 +16,7 @@ export const AdminDetail = () => {
             return;
         }
         administratorsServices.get(user.id)
-            .then(setAdmin)
+            .then(x=>x.data && setAdmin(x.data))
             .catch(() => setAdmin(null))
             .finally(() => setLoading(false));
     }, [user]);
