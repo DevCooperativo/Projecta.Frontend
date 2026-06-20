@@ -38,6 +38,16 @@ export const Navbar = () => {
                             </NavLink>
                         </li>
                         <li className="nav-item">
+                            <NavLink className={linkClass} to="/projects">
+                                Projetos
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className={linkClass} to="/coordinations">
+                                Coordenadorias
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
                             <NavLink className={linkClass} to="/professors">
                                 Professores
                             </NavLink>

@@ -18,6 +18,14 @@ import { BorrowNew } from '@/features/borrows/pages/borrowNew';
 import { BorrowClose } from '@/features/borrows/pages/borrowClose';
 import { AdminDetail } from '@/features/admin/pages/adminDetail';
 import { AdminEdit } from '@/features/admin/pages/adminEdit';
+import { CoordinationList } from '@/features/coordinations/pages/coordinationList';
+import { CoordinationDetail } from '@/features/coordinations/pages/coordinationDetail';
+import { CoordinationNew } from '@/features/coordinations/pages/coordinationNew';
+import { CoordinationEdit } from '@/features/coordinations/pages/coordinationEdit';
+import { ProjectList } from '@/features/projects/pages/projectList';
+import { ProjectDetail } from '@/features/projects/pages/projectDetail';
+import { ProjectNew } from '@/features/projects/pages/projectNew';
+import { ProjectEdit } from '@/features/projects/pages/projectEdit';
 
 export const AppRoutes = () => {
     return (
@@ -60,6 +68,14 @@ export const AppRoutes = () => {
                     <Route path="/borrows/:id/close" element={<BorrowClose />} />
                     <Route path="/admin" element={<AdminDetail />} />
                     <Route path="/admin/edit" element={<AdminEdit />} />
+                    <Route path="/coordinations" element={<CoordinationList />} />
+                    <Route path="/coordinations/new" element={<CoordinationNew />} />
+                    <Route path="/coordinations/:id" element={<CoordinationDetail />} />
+                    <Route path="/coordinations/:id/edit" element={<CoordinationEdit />} />
+                    <Route path="/projects" element={<ProjectList />} />
+                    <Route path="/projects/new" element={<ProjectNew />} />
+                    <Route path="/projects/:id" element={<ProjectDetail />} />
+                    <Route path="/projects/:id/edit" element={<ProjectEdit />} />
                 </Route>
             </Routes>
         </BrowserRouter>
