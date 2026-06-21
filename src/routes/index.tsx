@@ -26,6 +26,22 @@ import { ProjectList } from '@/features/projects/pages/projectList';
 import { ProjectDetail } from '@/features/projects/pages/projectDetail';
 import { ProjectNew } from '@/features/projects/pages/projectNew';
 import { ProjectEdit } from '@/features/projects/pages/projectEdit';
+import { LaboratoryList } from '@/features/laboratories/pages/laboratoryList';
+import { LaboratoryDetail } from '@/features/laboratories/pages/laboratoryDetail';
+import { LaboratoryNew } from '@/features/laboratories/pages/laboratoryNew';
+import { LaboratoryEdit } from '@/features/laboratories/pages/laboratoryEdit';
+import { EquipmentCategoryList } from '@/features/equipmentCategories/pages/equipmentCategoryList';
+import { EquipmentCategoryDetail } from '@/features/equipmentCategories/pages/equipmentCategoryDetail';
+import { EquipmentCategoryNew } from '@/features/equipmentCategories/pages/equipmentCategoryNew';
+import { EquipmentCategoryEdit } from '@/features/equipmentCategories/pages/equipmentCategoryEdit';
+import { EquipmentList } from '@/features/equipments/pages/equipmentList';
+import { EquipmentDetail } from '@/features/equipments/pages/equipmentDetail';
+import { EquipmentNew } from '@/features/equipments/pages/equipmentNew';
+import { EquipmentEdit } from '@/features/equipments/pages/equipmentEdit';
+import { ProjectCategoryList } from '@/features/projectCategories/pages/projectCategoryList';
+import { ProjectCategoryDetail } from '@/features/projectCategories/pages/projectCategoryDetail';
+import { ProjectCategoryNew } from '@/features/projectCategories/pages/projectCategoryNew';
+import { ProjectCategoryEdit } from '@/features/projectCategories/pages/projectCategoryEdit';
 
 export const AppRoutes = () => {
     return (
@@ -76,6 +92,22 @@ export const AppRoutes = () => {
                     <Route path="/projects/new" element={<ProjectNew />} />
                     <Route path="/projects/:id" element={<ProjectDetail />} />
                     <Route path="/projects/:id/edit" element={<ProjectEdit />} />
+                    <Route path="/project-categories" element={<ProjectCategoryList />} />
+                    <Route path="/project-categories/new" element={<ProjectCategoryNew />} />
+                    <Route path="/project-categories/:id" element={<ProjectCategoryDetail />} />
+                    <Route path="/project-categories/:id/edit" element={<ProjectCategoryEdit />} />
+                    <Route path="/laboratories" element={<LaboratoryList />} />
+                    <Route path="/laboratories/new" element={<LaboratoryNew />} />
+                    <Route path="/laboratories/:id" element={<LaboratoryDetail />} />
+                    <Route path="/laboratories/:id/edit" element={<LaboratoryEdit />} />
+                    <Route path="/equipment-categories" element={<EquipmentCategoryList />} />
+                    <Route path="/equipment-categories/new" element={<EquipmentCategoryNew />} />
+                    <Route path="/equipment-categories/:id" element={<EquipmentCategoryDetail />} />
+                    <Route path="/equipment-categories/:id/edit" element={<EquipmentCategoryEdit />} />
+                    <Route path="/equipments" element={<EquipmentList />} />
+                    <Route path="/equipments/new" element={<EquipmentNew />} />
+                    <Route path="/equipments/:id" element={<EquipmentDetail />} />
+                    <Route path="/equipments/:id/edit" element={<EquipmentEdit />} />
                 </Route>
             </Routes>
         </BrowserRouter>

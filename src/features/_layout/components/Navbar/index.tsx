@@ -37,15 +37,33 @@ export const Navbar = () => {
                                 Dashboard
                             </NavLink>
                         </li>
-                        <li className="nav-item">
-                            <NavLink className={linkClass} to="/projects">
+                        <li className="nav-item dropdown">
+                            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Projetos
-                            </NavLink>
+                            </a>
+                            <ul className="dropdown-menu">
+                                <li><NavLink className="dropdown-item" to="/projects">Gerenciamento</NavLink></li>
+                                <li><NavLink className="dropdown-item" to="/project-categories">Categorias</NavLink></li>
+                            </ul>
                         </li>
                         <li className="nav-item">
                             <NavLink className={linkClass} to="/coordinations">
                                 Coordenadorias
                             </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className={linkClass} to="/laboratories">
+                                Laboratórios
+                            </NavLink>
+                        </li>
+                        <li className="nav-item dropdown">
+                            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Equipamentos
+                            </a>
+                            <ul className="dropdown-menu">
+                                <li><NavLink className="dropdown-item" to="/equipments">Gerenciamento</NavLink></li>
+                                <li><NavLink className="dropdown-item" to="/equipment-categories">Categorias</NavLink></li>
+                            </ul>
                         </li>
                         <li className="nav-item">
                             <NavLink className={linkClass} to="/professors">
