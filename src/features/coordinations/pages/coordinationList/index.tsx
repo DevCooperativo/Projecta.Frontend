@@ -2,12 +2,14 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { coordinationsServices } from '@/api/coordinations/implementation/coordinationsServices';
 import type { CoordinationResponse } from '@/api/coordinations/iCoordinationsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 const PAGE_SIZE = 10;
 
-const BLOCKS = ['B0', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10'];
 
 export const CoordinationList = () => {
+    const { user } = useAuth();
+    const isAdmin = user?.profileType === 'admin';
     const [coordinations, setCoordinations] = useState<CoordinationResponse[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -38,7 +40,11 @@ export const CoordinationList = () => {
         setBlockFilter('');
         setPage(1);
     };
-
+    const blocks = useMemo(() => {
+        if (coordinations.length > 0) {
+            return coordinations.map(x => x.block)
+        }
+    }, [coordinations])
     return (
         <>
             <div className="d-flex justify-content-between align-items-start mb-4">
@@ -51,9 +57,11 @@ export const CoordinationList = () => {
                     </nav>
                     <h4 className="fw-bold mb-0">Coordenadorias</h4>
                 </div>
-                <Link to="/coordinations/new" className="btn btn-dark">
-                    + Nova coordenadoria
-                </Link>
+                {isAdmin && (
+                    <Link to="/coordinations/new" className="btn btn-dark">
+                        + Nova coordenadoria
+                    </Link>
+                )}
             </div>
 
             <div className="card mb-4">
@@ -75,7 +83,7 @@ export const CoordinationList = () => {
                                 onChange={e => { setBlockFilter(e.target.value); setPage(1); }}
                             >
                                 <option value="">Todos os blocos</option>
-                                {BLOCKS.map(b => (
+                                {(blocks??["-"]).map(b => (
                                     <option key={b} value={b}>{b}</option>
                                 ))}
                             </select>

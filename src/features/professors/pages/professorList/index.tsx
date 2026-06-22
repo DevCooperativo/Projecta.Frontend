@@ -4,10 +4,13 @@ import { coordinations } from '@/mocks/coordinations';
 import { Avatar } from '@/components/Avatar';
 import { professorsServices } from '@/api/professors/implementation/professorsServices';
 import type { ProfessorResponse } from '@/api/professors/iProfessorsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 const PAGE_SIZE = 10;
 
 export const ProfessorList = () => {
+    const { user } = useAuth();
+    const isAdmin = user?.profileType === 'admin';
     const [professors, setProfessors] = useState<ProfessorResponse[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -51,9 +54,11 @@ export const ProfessorList = () => {
                     </nav>
                     <h4 className="fw-bold mb-0">Professores</h4>
                 </div>
-                <Link to="/professors/new" className="btn btn-dark">
-                    + Novo professor
-                </Link>
+                {isAdmin && (
+                    <Link to="/professors/new" className="btn btn-dark">
+                        + Novo professor
+                    </Link>
+                )}
             </div>
 
             <div className="card mb-4">

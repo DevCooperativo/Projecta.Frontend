@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 import { StatusBadge } from '@/components/StatusBadge';
 import { borrowsServices } from '@/api/borrows/implementation/borrowsServices';
 import type { BorrowResponse } from '@/api/borrows/iBorrowsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 const PAGE_SIZE = 10;
 
 export const BorrowList = () => {
+    const { user } = useAuth();
+    const canCreate = user?.profileType !== 'admin';
     const [borrows, setBorrows] = useState<BorrowResponse[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -38,8 +41,8 @@ export const BorrowList = () => {
     const filtered = useMemo(() => {
         const q = search.toLowerCase();
         return borrows.filter(b =>
-            (q === '' || (b.equipmentName ?? '').toLowerCase().includes(q) || (b.borrowerName ?? '').toLowerCase().includes(q)) &&
-            (borrowerTypeFilter === '' || b.borrowerType === borrowerTypeFilter) &&
+            (q === '' || (b.equipmentName ?? '').toLowerCase().includes(q) || (b.professor?.name ?? b.student?.name ?? '').toLowerCase().includes(q)) &&
+            (borrowerTypeFilter === '' || (borrowerTypeFilter === 'professor' ? b.professor != null : b.student != null)) &&
             (statusFilter === '' || b.status === statusFilter)
         );
     }, [borrows, search, borrowerTypeFilter, statusFilter]);
@@ -68,9 +71,11 @@ export const BorrowList = () => {
                     </nav>
                     <h4 className="fw-bold mb-0">Empréstimos</h4>
                 </div>
-                <Link to="/borrows/new" className="btn btn-dark">
-                    + Novo empréstimo
-                </Link>
+                {canCreate && (
+                    <Link to="/borrows/new" className="btn btn-dark">
+                        + Novo empréstimo
+                    </Link>
+                )}
             </div>
 
             <div className="card mb-4">
@@ -169,10 +174,10 @@ export const BorrowList = () => {
                                         <tr key={b.id}>
                                             <td className="align-middle">{b.equipmentName ?? `Equipamento #${b.equipmentId}`}</td>
                                             <td className="align-middle">
-                                                {b.borrowerName ?? `ID ${b.borrowerId}`}
-                                                {b.borrowerType && (
+                                                {b.professor?.name ?? b.student?.name ?? '—'}
+                                                {(b.professor || b.student) && (
                                                     <span className="badge bg-secondary-subtle text-secondary ms-2 fw-normal">
-                                                        {b.borrowerType === 'professor' ? 'Professor' : 'Aluno'}
+                                                        {b.professor ? 'Professor' : 'Aluno'}
                                                     </span>
                                                 )}
                                             </td>
@@ -189,11 +194,25 @@ export const BorrowList = () => {
                                             </td>
                                             <td className="align-middle"><StatusBadge status={b.status} /></td>
                                             <td className="align-middle text-end">
-                                                {b.status === 'pending' && (
-                                                    <Link to={`/borrows/${b.id}/close`} className="btn btn-sm btn-outline-dark">
-                                                        Encerrar
-                                                    </Link>
-                                                )}
+                                                {(() => {
+                                                    const isAdmin = user?.profileType === 'admin';
+                                                    const isCreator = b.professor?.id === user?.id || b.student?.id === user?.id;
+                                                    const canAccess = isAdmin || isCreator;
+                                                    return (
+                                                        <div className="d-flex gap-2 justify-content-end">
+                                                            {canAccess && (
+                                                                <Link to={`/borrows/${b.id}`} className="btn btn-sm btn-outline-secondary">
+                                                                    Ver
+                                                                </Link>
+                                                            )}
+                                                            {canAccess && b.status === 'pending' && (
+                                                                <Link to={`/borrows/${b.id}/close`} className="btn btn-sm btn-outline-dark">
+                                                                    Encerrar
+                                                                </Link>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })()}
                                             </td>
                                         </tr>
                                     );

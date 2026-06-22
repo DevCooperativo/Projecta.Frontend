@@ -10,9 +10,10 @@ export interface AuthUser {
 
 export interface AuthContextType {
     isLoggedIn: boolean;
+    isCheckingSession: boolean;
     user: AuthUser | null;
     login: (user: AuthUser) => void;
-    logout: () => void;
+    logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({} as AuthContextType);

@@ -5,6 +5,7 @@ import type {
     ProfessorResponse,
     CreateProfessorRequest,
     UpdateProfessorRequest,
+    BorrowMetrics,
 } from '../iProfessorsServices';
 
 export const professorsServices: IProfessorsServices = {
@@ -35,6 +36,11 @@ export const professorsServices: IProfessorsServices = {
 
     async remove(id: number): Promise<ApiResponse<void>> {
         const response = await httpClient.delete<ApiResponse<void>>(`/api/professors/${id}`);
+        return response.data;
+    },
+
+    async metrics(): Promise<ApiResponse<BorrowMetrics>> {
+        const response = await httpClient.get<ApiResponse<BorrowMetrics>>('/api/professors/metrics');
         return response.data;
     },
 };

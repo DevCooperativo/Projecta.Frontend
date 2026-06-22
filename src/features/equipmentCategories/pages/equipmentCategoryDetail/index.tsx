@@ -1,0 +1,17 @@
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import type { EquipmentCategoryResponse } from '@/api/equipmentCategories/iEquipmentCategoriesServices';
+import { equipmentCategoriesServices } from '@/api/equipmentCategories/implementation/equipmentCategoriesServices';
+import { ConfirmModal } from '@/components/ConfirmModal';
+import { useAuth } from '@/context/auth/useAuth';
+
+export const EquipmentCategoryDetail = () => {
+    const { user } = useAuth(); const canManage = user?.profileType === 'professor';
+    const { id } = useParams(); const navigate = useNavigate(); const [item, setItem] = useState<EquipmentCategoryResponse | null>(null); const [loading, setLoading] = useState(true); const [modal, setModal] = useState(false); const [error, setError] = useState<string | null>(null);
+    useEffect(() => { if (id) equipmentCategoriesServices.get(Number(id)).then(r => setItem(r.data ?? null)).finally(() => setLoading(false)); }, [id]);
+    if (loading) return <div className="text-center text-muted py-5">Carregando...</div>; if (!item) return <div className="text-center text-muted py-5">Categoria não encontrada. <Link to="/equipment-categories">Voltar</Link></div>;
+    const remove = async () => { try { await equipmentCategoriesServices.remove(item.id); navigate('/equipment-categories'); } catch { setModal(false); setError('Não foi possível excluir esta categoria. Verifique se existem equipamentos associados.'); } };
+    return <><div className="d-flex justify-content-between align-items-start mb-4"><div><nav><ol className="breadcrumb mb-1 small"><li className="breadcrumb-item"><Link to="/">Início</Link></li><li className="breadcrumb-item"><Link to="/equipment-categories">Categorias de equipamentos</Link></li><li className="breadcrumb-item active">Detalhes</li></ol></nav><h4 className="fw-bold mb-0">Categoria de equipamento</h4></div>{canManage && <div className="d-flex gap-2"><Link className="btn btn-outline-dark" to={`/equipment-categories/${item.id}/edit`} state={{ category: item }}>Editar</Link><button className="btn btn-outline-danger" onClick={() => setModal(true)}>Excluir</button></div>}</div>
+        {error && <div className="alert alert-danger">{error}</div>}<div className="row g-4"><div className="col-lg-8"><div className="card"><div className="card-body p-4"><h6 className="fw-semibold mb-4 pb-2 border-bottom">Dados da categoria</h6><p className="text-muted small mb-1">Descrição</p><p className="fw-semibold">{item.description}</p><p className="text-muted small mb-1">Fonte de alimentação</p><p className="mb-0">{item.powerSource}</p></div></div></div><div className="col-lg-4"><div className="card"><div className="card-body p-4"><h6 className="fw-semibold mb-4 pb-2 border-bottom">Manuseio</h6><span className={`badge border ${item.fragile ? 'bg-warning-subtle text-warning-emphasis' : 'bg-light text-secondary'}`}>{item.fragile ? 'Equipamento frágil' : 'Manuseio comum'}</span></div></div></div></div>
+        <ConfirmModal show={modal} title="Excluir categoria" message={`Tem certeza que deseja excluir "${item.description}"?`} confirmLabel="Excluir" onConfirm={remove} onCancel={() => setModal(false)} /></>;
+};

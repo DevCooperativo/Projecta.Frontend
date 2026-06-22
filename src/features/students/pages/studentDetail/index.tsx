@@ -4,6 +4,7 @@ import { Avatar } from '@/components/Avatar';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { studentsServices } from '@/api/students/implementation/studentsServices';
 import type { StudentResponse } from '@/api/students/iStudentsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 const SHIFT_LABELS: Record<string, string> = {
     MORNING: 'Manhã',
@@ -13,6 +14,8 @@ const SHIFT_LABELS: Record<string, string> = {
 };
 
 export const StudentDetail = () => {
+    const { user } = useAuth();
+    const isAdmin = user?.profileType === 'admin';
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [student, setStudent] = useState<StudentResponse | null>(null);
@@ -64,14 +67,16 @@ export const StudentDetail = () => {
                     </nav>
                     <h4 className="fw-bold mb-0">{student.name}</h4>
                 </div>
-                <div className="d-flex gap-2">
-                    <Link to={`/students/${student.id}/edit`} className="btn btn-outline-dark">
-                        Editar
-                    </Link>
-                    <button className="btn btn-outline-danger" onClick={() => { setDeleteError(null); setShowModal(true); }}>
-                        Excluir
-                    </button>
-                </div>
+                {isAdmin && (
+                    <div className="d-flex gap-2">
+                        <Link to={`/students/${student.id}/edit`} state={{ student }} className="btn btn-outline-dark">
+                            Editar
+                        </Link>
+                        <button className="btn btn-outline-danger" onClick={() => { setDeleteError(null); setShowModal(true); }}>
+                            Excluir
+                        </button>
+                    </div>
+                )}
             </div>
 
             {deleteError && (

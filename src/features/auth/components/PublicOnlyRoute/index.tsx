@@ -7,6 +7,7 @@ interface PublicOnlyRouteProps {
 }
 
 export const PublicOnlyRoute = ({ children }: PublicOnlyRouteProps) => {
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, isCheckingSession } = useAuth();
+    if (isCheckingSession) return null;
     return !isLoggedIn ? <>{children}</> : <Navigate to="/" replace />;
 };

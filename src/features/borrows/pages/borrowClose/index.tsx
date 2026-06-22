@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { borrowsServices } from '@/api/borrows/implementation/borrowsServices';
 import type { BorrowResponse } from '@/api/borrows/iBorrowsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 export const BorrowClose = () => {
+    const { user } = useAuth();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [borrow, setBorrow] = useState<BorrowResponse | null>(null);
@@ -41,6 +43,12 @@ export const BorrowClose = () => {
                 <Link to="/borrows">Voltar para a lista</Link>
             </div>
         );
+    }
+
+    const isAdmin = user?.profileType === 'admin';
+    const isCreator = borrow.professor?.id === user?.id || borrow.student?.id === user?.id;
+    if (!isAdmin && !isCreator) {
+        return <Navigate to="/borrows" replace />;
     }
 
     const isOverdue = borrow.expectedReturnDate != null && borrow.expectedReturnDate < today;
@@ -101,10 +109,10 @@ export const BorrowClose = () => {
                                     <div className="col-sm-6">
                                         <p className="text-muted small mb-1">Tomador</p>
                                         <p className="fw-semibold mb-0">
-                                            {borrow.borrowerName ?? `ID ${borrow.borrowerId}`}
-                                            {borrow.borrowerType && (
+                                            {borrow.professor?.name ?? borrow.student?.name ?? '—'}
+                                            {(borrow.professor || borrow.student) && (
                                                 <span className="badge bg-secondary-subtle text-secondary ms-2 fw-normal">
-                                                    {borrow.borrowerType === 'professor' ? 'Professor' : 'Aluno'}
+                                                    {borrow.professor ? 'Professor' : 'Aluno'}
                                                 </span>
                                             )}
                                         </p>

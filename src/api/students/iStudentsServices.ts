@@ -31,10 +31,17 @@ export interface UpdateStudentRequest {
     shift?: string;
 }
 
+export interface BorrowMetrics {
+    total: number;
+    active: number;
+    finished: number;
+}
+
 export interface IStudentsServices {
     list(): Promise<ApiResponse<StudentResponse[]>>;
     get(id: number): Promise<ApiResponse<StudentResponse>>;
     create(data: CreateStudentRequest): Promise<ApiResponse<StudentResponse>>;
     update(id: number, data: UpdateStudentRequest): Promise<ApiResponse<StudentResponse>>;
     remove(id: number): Promise<ApiResponse<void>>;
+    metrics(): Promise<ApiResponse<BorrowMetrics>>;
 }

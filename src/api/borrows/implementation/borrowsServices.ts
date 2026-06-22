@@ -4,6 +4,7 @@ import type {
     IBorrowsServices,
     BorrowResponse,
     CreateBorrowRequest,
+    UpdateBorrowRequest,
     ListBorrowsParams,
 } from '../iBorrowsServices';
 
@@ -23,7 +24,7 @@ export const borrowsServices: IBorrowsServices = {
         return response.data;
     },
 
-    async update(id: number, data: { equipmentId: number }): Promise<ApiResponse<BorrowResponse>> {
+    async update(id: number, data: UpdateBorrowRequest): Promise<ApiResponse<BorrowResponse>> {
         const response = await httpClient.put<ApiResponse<BorrowResponse>>(`/api/borrow/${id}`, data);
         return response.data;
     },

@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/auth/useAuth';
 import { projectsServices } from '@/api/projects/implementation/projectsServices';
 import { laboratoriesServices } from '@/api/laboratories/implementation/laboratoriesServices';
 import { projectCategoriesServices } from '@/api/projectCategories/implementation/projectCategoriesServices';
@@ -17,6 +18,8 @@ const STATUS_OPTIONS = [
 ];
 
 export const ProjectList = () => {
+    const { user } = useAuth();
+    const canManage = user?.profileType === 'professor';
     const [projects, setProjects] = useState<ProjectResponse[]>([]);
     const [laboratories, setLaboratories] = useState<LaboratoryResponse[]>([]);
     const [categories, setCategories] = useState<ProjectCategoryResponse[]>([]);
@@ -79,9 +82,11 @@ export const ProjectList = () => {
                     </nav>
                     <h4 className="fw-bold mb-0">Projetos</h4>
                 </div>
-                <Link to="/projects/new" className="btn btn-dark">
-                    + Novo projeto
-                </Link>
+                {canManage && (
+                    <Link to="/projects/new" className="btn btn-dark">
+                        + Novo projeto
+                    </Link>
+                )}
             </div>
 
             <div className="card mb-4">

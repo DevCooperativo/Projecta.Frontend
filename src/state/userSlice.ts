@@ -13,6 +13,7 @@ export interface UserState {
 // Action types
 const LOGIN = 'user/login' as const
 const LOGOUT = 'user/logout' as const
+const ME = 'user/me' as const
 const UPDATE_PROFILE = 'user/updateProfile' as const
 
 export interface LoginPayload {
@@ -20,6 +21,13 @@ export interface LoginPayload {
     name?: string
     email?: string
     profileType?: UserProfileType
+}
+
+export interface MePayload {
+    id: number
+    name: string
+    email: string
+    profileType: UserProfileType
 }
 
 export interface UpdateProfilePayload {
@@ -30,6 +38,7 @@ export interface UpdateProfilePayload {
 type UserAction =
     | { type: typeof LOGIN; payload: LoginPayload }
     | { type: typeof LOGOUT }
+    | { type: typeof ME, payload: MePayload }
     | { type: typeof UPDATE_PROFILE; payload: UpdateProfilePayload }
 
 // Action creators
@@ -40,6 +49,12 @@ export const userLogin = (payload: LoginPayload): UserAction => ({
 
 export const userLogout = (): UserAction => ({
     type: LOGOUT,
+})
+
+
+export const userMe = (payload: MePayload): UserAction => ({
+    type: ME,
+    payload,
 })
 
 export const userUpdateProfile = (payload: UpdateProfilePayload): UserAction => ({
@@ -73,6 +88,15 @@ export function userReducer(state = initialState, action: UserAction): UserState
                 ...state,
                 name: action.payload.name ?? state.name,
                 email: action.payload.email ?? state.email,
+            }
+        case ME:
+            return {
+                ...state,
+                id: action.payload.id ?? undefined,
+                name: action.payload.name ?? undefined,
+                email: action.payload.email ?? undefined,
+                profileType: action.payload.profileType,
+                isAuthenticated: true
             }
         default:
             return state

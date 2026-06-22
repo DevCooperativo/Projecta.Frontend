@@ -10,5 +10,9 @@ export const authServices: IAuthServices = {
     async me(): Promise<ApiResponse<MeResponse>> {
         const response = await httpClient.get<ApiResponse<MeResponse>>("/api/auth/me").catch(ex => { throw ex })
         return response.data
-    }
+    },
+    async logout(): Promise<ApiResponse<void>> {
+        const response = await httpClient.post<ApiResponse<void>>("/api/auth/logout").catch(ex => { throw ex })
+        return response.data
+}
 };

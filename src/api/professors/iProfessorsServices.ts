@@ -25,6 +25,12 @@ export interface UpdateProfessorRequest {
     telephone?: string;
 }
 
+export interface BorrowMetrics {
+    total: number;
+    active: number;
+    finished: number;
+}
+
 export interface IProfessorsServices {
     list(): Promise<ApiResponse<ProfessorResponse[]>>;
     get(id: number): Promise<ApiResponse<ProfessorResponse>>;
@@ -32,4 +38,5 @@ export interface IProfessorsServices {
     update(id: number, data: UpdateProfessorRequest): Promise<ApiResponse<ProfessorResponse>>;
     changeCoordination(coordinationId: number): Promise<ApiResponse<void>>;
     remove(id: number): Promise<ApiResponse<void>>;
+    metrics(): Promise<ApiResponse<BorrowMetrics>>;
 }

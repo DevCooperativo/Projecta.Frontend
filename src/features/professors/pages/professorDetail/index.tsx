@@ -5,8 +5,11 @@ import { Avatar } from '@/components/Avatar';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { professorsServices } from '@/api/professors/implementation/professorsServices';
 import type { ProfessorResponse } from '@/api/professors/iProfessorsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 export const ProfessorDetail = () => {
+    const { user } = useAuth();
+    const isAdmin = user?.profileType === 'admin';
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [professor, setProfessor] = useState<ProfessorResponse | null>(null);
@@ -60,14 +63,16 @@ export const ProfessorDetail = () => {
                     </nav>
                     <h4 className="fw-bold mb-0">{professor.name}</h4>
                 </div>
-                <div className="d-flex gap-2">
-                    <Link to={`/professors/${professor.id}/edit`} className="btn btn-outline-dark">
-                        Editar
-                    </Link>
-                    <button className="btn btn-outline-danger" onClick={() => { setDeleteError(null); setShowModal(true); }}>
-                        Excluir
-                    </button>
-                </div>
+                {isAdmin && (
+                    <div className="d-flex gap-2">
+                        <Link to={`/professors/${professor.id}/edit`} state={{ professor }} className="btn btn-outline-dark">
+                            Editar
+                        </Link>
+                        <button className="btn btn-outline-danger" onClick={() => { setDeleteError(null); setShowModal(true); }}>
+                            Excluir
+                        </button>
+                    </div>
+                )}
             </div>
 
             {deleteError && (
