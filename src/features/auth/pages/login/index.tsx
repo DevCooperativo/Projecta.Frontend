@@ -1,31 +1,25 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { object, string } from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth/useAuth';
 import { authServices } from '@/api/auth/implementation/authServices';
+import { LoginSchema } from '@/schemas/auth/loginSchema';
 
 interface LoginFormValues {
     email: string;
     password: string;
-    profile: 'admin' | 'professor' | 'student';
 }
 
-const schema = object({
-    email: string().email('E-mail inválido').required('E-mail é obrigatório'),
-    password: string().required('Senha é obrigatória'),
-    profile: string().oneOf(['admin', 'professor', 'student']).required('Selecione um perfil'),
-});
 
 export const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [serverError, setServerError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-
+    const schema = LoginSchema()
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
-        resolver: yupResolver(schema) as never,
+        resolver: yupResolver(schema),
     });
 
     const onSubmit = async (data: LoginFormValues) => {
@@ -35,13 +29,16 @@ export const Login = () => {
             const response = await authServices.signin({
                 email: data.email,
                 password: data.password,
-                profileType: data.profile,
             });
+            if (response.code !== 200 || !response.data) {
+                setServerError('E-mail, senha ou perfil incorretos. Verifique e tente novamente.');
+                return
+            }
             login({
-                id: response.id,
-                name: response.name,
-                email: response.email ?? data.email,
-                profileType: data.profile,
+                id: response.data.id,
+                name: response.data.name,
+                email: response.data.email ?? data.email,
+                profileType: response.data.profileType
             });
             navigate('/');
         } catch {
@@ -88,20 +85,6 @@ export const Login = () => {
                                             placeholder="••••••••"
                                         />
                                         {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
-                                    </div>
-                                    <div className="mb-4">
-                                        <label className="form-label" htmlFor="profile">Perfil de acesso</label>
-                                        <select
-                                            {...register('profile')}
-                                            id="profile"
-                                            className={`form-select ${errors.profile ? 'is-invalid' : ''}`}
-                                        >
-                                            <option value="">Selecione...</option>
-                                            <option value="admin">Administrador</option>
-                                            <option value="professor">Professor</option>
-                                            <option value="student">Aluno</option>
-                                        </select>
-                                        {errors.profile && <div className="invalid-feedback">{errors.profile.message}</div>}
                                     </div>
                                     <button type="submit" className="btn btn-dark w-100" disabled={loading}>
                                         {loading ? 'Entrando...' : 'Entrar'}

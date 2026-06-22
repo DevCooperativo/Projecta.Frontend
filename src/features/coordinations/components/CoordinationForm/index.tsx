@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
     coordinationCreateSchema,
     coordinationEditSchema,
@@ -11,7 +11,6 @@ import {
 import { coordinationsServices } from '@/api/coordinations/implementation/coordinationsServices';
 import type { CoordinationResponse } from '@/api/coordinations/iCoordinationsServices';
 
-const BLOCKS = ['B0', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10'];
 
 interface CoordinationFormProps {
     mode: 'new' | 'edit';
@@ -20,6 +19,8 @@ interface CoordinationFormProps {
 
 export const CoordinationForm = ({ mode, coordinationId }: CoordinationFormProps) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const prefetched = (location.state as { coordination?: CoordinationResponse } | null)?.coordination;
     const [coordination, setCoordination] = useState<CoordinationResponse | null>(null);
     const [serverError, setServerError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -32,16 +33,20 @@ export const CoordinationForm = ({ mode, coordinationId }: CoordinationFormProps
         });
 
     useEffect(() => {
-        if (mode === 'edit' && coordinationId != null) {
-            coordinationsServices.get(coordinationId).then(x => {
-                if (x.data) {
-                    setCoordination(x.data);
-                    reset({ area: x.data.area, block: x.data.block, description: x.data.description });
-                }
-            }).catch(() => {
-                setServerError('Não foi possível carregar os dados da coordenadoria.');
-            });
+        if (mode !== 'edit' || coordinationId == null) return;
+        if (prefetched) {
+            setCoordination(prefetched);
+            reset({ area: prefetched.area, block: prefetched.block, description: prefetched.description });
+            return;
         }
+        coordinationsServices.get(coordinationId).then(x => {
+            if (x.data) {
+                setCoordination(x.data);
+                reset({ area: x.data.area, block: x.data.block, description: x.data.description });
+            }
+        }).catch(() => {
+            setServerError('Não foi possível carregar os dados da coordenadoria.');
+        });
     }, [mode, coordinationId, reset]);
 
     const onSubmit = async (data: CoordinationCreateValues | CoordinationEditValues) => {
@@ -103,18 +108,14 @@ export const CoordinationForm = ({ mode, coordinationId }: CoordinationFormProps
                                         />
                                         {errors.area && <div className="invalid-feedback">{errors.area.message}</div>}
                                     </div>
-                                    <div className="col-md-4">
+                                    <div className="col-12">
                                         <label className="form-label" htmlFor="block">Bloco</label>
-                                        <select
+                                        <input
                                             {...register('block')}
-                                            id="block"
-                                            className={`form-select ${errors.block ? 'is-invalid' : ''}`}
+                                            type={"text"}
+                                            className={`form-control ${errors.block ? 'is-invalid' : ''}`}
                                         >
-                                            <option value="">Selecione...</option>
-                                            {BLOCKS.map(b => (
-                                                <option key={b} value={b}>{b}</option>
-                                            ))}
-                                        </select>
+                                        </input>
                                         {errors.block && <div className="invalid-feedback">{errors.block.message}</div>}
                                     </div>
                                     <div className="col-12">

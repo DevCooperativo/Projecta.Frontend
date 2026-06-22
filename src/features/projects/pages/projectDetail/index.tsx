@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { useAuth } from '@/context/auth/useAuth';
 import { StatusBadge } from '@/components/StatusBadge';
 import { projectsServices } from '@/api/projects/implementation/projectsServices';
 import { coordinatorsServices } from '@/api/coordinators/implementation/coordinatorsServices';
@@ -16,6 +17,8 @@ import { professorsServices } from '@/api/professors/implementation/professorsSe
 import type { ProfessorResponse } from '@/api/professors/iProfessorsServices';
 
 export const ProjectDetail = () => {
+    const { user } = useAuth();
+    const canManage = user?.profileType === 'professor';
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [project, setProject] = useState<ProjectResponse | null>(null);
@@ -97,17 +100,19 @@ export const ProjectDetail = () => {
                         <StatusBadge status={project.status} />
                     </div>
                 </div>
-                <div className="d-flex gap-2">
-                    <Link to={`/projects/${project.id}/edit`} className="btn btn-outline-dark">
-                        Editar
-                    </Link>
-                    <button
-                        className="btn btn-outline-danger"
-                        onClick={() => { setDeleteError(null); setShowDeleteModal(true); }}
-                    >
-                        Excluir
-                    </button>
-                </div>
+                {canManage && (
+                    <div className="d-flex gap-2">
+                        <Link to={`/projects/${project.id}/edit`} className="btn btn-outline-dark">
+                            Editar
+                        </Link>
+                        <button
+                            className="btn btn-outline-danger"
+                            onClick={() => { setDeleteError(null); setShowDeleteModal(true); }}
+                        >
+                            Excluir
+                        </button>
+                    </div>
+                )}
             </div>
 
             {deleteError && <div className="alert alert-danger mb-4">{deleteError}</div>}

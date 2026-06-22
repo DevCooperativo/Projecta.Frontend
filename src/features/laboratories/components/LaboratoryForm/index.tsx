@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { laboratoriesServices } from '@/api/laboratories/implementation/laboratoriesServices';
 import type { LaboratoryResponse } from '@/api/laboratories/iLaboratoriesServices';
 import { professorsServices } from '@/api/professors/implementation/professorsServices';
@@ -12,6 +12,8 @@ interface Props { mode: 'new' | 'edit'; laboratoryId?: number }
 
 export const LaboratoryForm = ({ mode, laboratoryId }: Props) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const prefetched = (location.state as { laboratory?: LaboratoryResponse } | null)?.laboratory;
     const [laboratory, setLaboratory] = useState<LaboratoryResponse | null>(null);
     const [professors, setProfessors] = useState<ProfessorResponse[]>([]);
     const [serverError, setServerError] = useState<string | null>(null);
@@ -22,20 +24,18 @@ export const LaboratoryForm = ({ mode, laboratoryId }: Props) => {
     });
 
     useEffect(() => {
+        if (prefetched) {
+            setLaboratory(prefetched);
+            reset({ name: prefetched.name, description: prefetched.description, maxOccupants: prefetched.maxOccupants, storageSpace: prefetched.storageSpace, professorId: prefetched.professorId });
+        }
         const requests: Promise<unknown>[] = [
             professorsServices.list().then(response => setProfessors(response.data ?? [])),
         ];
-        if (mode === 'edit' && laboratoryId) {
+        if (mode === 'edit' && laboratoryId && !prefetched) {
             requests.push(laboratoriesServices.get(laboratoryId).then(response => {
                 if (!response.data) return;
                 setLaboratory(response.data);
-                reset({
-                    name: response.data.name,
-                    description: response.data.description,
-                    maxOccupants: response.data.maxOccupants,
-                    storageSpace: response.data.storageSpace,
-                    professorId: response.data.professorId,
-                });
+                reset({ name: response.data.name, description: response.data.description, maxOccupants: response.data.maxOccupants, storageSpace: response.data.storageSpace, professorId: response.data.professorId });
             }));
         }
         Promise.all(requests).catch(() => setServerError('Não foi possível carregar os dados do formulário.'));

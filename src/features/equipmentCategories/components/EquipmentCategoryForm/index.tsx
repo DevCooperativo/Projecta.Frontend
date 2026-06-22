@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { EQUIPMENT_POWER_SOURCES, type EquipmentCategoryResponse } from '@/api/equipmentCategories/iEquipmentCategoriesServices';
 import { equipmentCategoriesServices } from '@/api/equipmentCategories/implementation/equipmentCategoriesServices';
 import { equipmentCategorySchema, type EquipmentCategoryValues } from '@/schemas/equipmentCategories/equipmentCategorySchema';
@@ -9,10 +9,10 @@ import { equipmentCategorySchema, type EquipmentCategoryValues } from '@/schemas
 interface Props { mode: 'new' | 'edit'; categoryId?: number }
 
 export const EquipmentCategoryForm = ({ mode, categoryId }: Props) => {
-    const navigate = useNavigate(); const [category, setCategory] = useState<EquipmentCategoryResponse | null>(null);
+    const navigate = useNavigate(); const location = useLocation(); const prefetched = (location.state as { category?: EquipmentCategoryResponse } | null)?.category; const [category, setCategory] = useState<EquipmentCategoryResponse | null>(null);
     const [error, setError] = useState<string | null>(null); const [loading, setLoading] = useState(false);
     const { register, handleSubmit, reset, formState: { errors } } = useForm<EquipmentCategoryValues>({ resolver: yupResolver(equipmentCategorySchema), defaultValues: { fragile: false } });
-    useEffect(() => { if (mode === 'edit' && categoryId) equipmentCategoriesServices.get(categoryId).then(r => { if (r.data) { setCategory(r.data); reset({ powerSource: r.data.powerSource, fragile: r.data.fragile, description: r.data.description }); } }).catch(() => setError('Não foi possível carregar a categoria.')); }, [mode, categoryId, reset]);
+    useEffect(() => { if (mode !== 'edit' || !categoryId) return; if (prefetched) { setCategory(prefetched); reset({ powerSource: prefetched.powerSource, fragile: prefetched.fragile, description: prefetched.description }); return; } equipmentCategoriesServices.get(categoryId).then(r => { if (r.data) { setCategory(r.data); reset({ powerSource: r.data.powerSource, fragile: r.data.fragile, description: r.data.description }); } }).catch(() => setError('Não foi possível carregar a categoria.')); }, [mode, categoryId, reset]);
     const submit = async (values: EquipmentCategoryValues) => { setLoading(true); setError(null); try { if (mode === 'new') { await equipmentCategoriesServices.create(values); navigate('/equipment-categories'); } else if (categoryId) { await equipmentCategoriesServices.update(categoryId, values); navigate(`/equipment-categories/${categoryId}`); } } catch { setError('Não foi possível salvar a categoria. Verifique os dados e tente novamente.'); } finally { setLoading(false); } };
     return <>
         <div className="mb-4"><nav><ol className="breadcrumb mb-1 small"><li className="breadcrumb-item"><Link to="/">Início</Link></li><li className="breadcrumb-item"><Link to="/equipment-categories">Categorias de equipamentos</Link></li>{category && <li className="breadcrumb-item"><Link to={`/equipment-categories/${category.id}`}>{category.description}</Link></li>}<li className="breadcrumb-item active">{mode === 'new' ? 'Nova' : 'Editar'}</li></ol></nav><h4 className="fw-bold mb-0">{mode === 'new' ? 'Nova categoria de equipamento' : 'Editar categoria de equipamento'}</h4></div>

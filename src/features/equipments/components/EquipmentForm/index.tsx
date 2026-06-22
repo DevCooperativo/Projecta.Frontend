@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import type { EquipmentResponse } from '@/api/equipments/iEquipmentsServices';
 import { equipmentsServices } from '@/api/equipments/implementation/equipmentsServices';
 import type { LaboratoryResponse } from '@/api/laboratories/iLaboratoriesServices';
@@ -15,7 +15,7 @@ import { equipmentSchema, type EquipmentValues } from '@/schemas/equipments/equi
 interface Props { mode: 'new' | 'edit'; equipmentId?: number }
 
 export const EquipmentForm = ({ mode, equipmentId }: Props) => {
-    const navigate = useNavigate(); const [equipment, setEquipment] = useState<EquipmentResponse | null>(null);
+    const navigate = useNavigate(); const location = useLocation(); const prefetched = (location.state as { equipment?: EquipmentResponse } | null)?.equipment; const [equipment, setEquipment] = useState<EquipmentResponse | null>(null);
     const [labs, setLabs] = useState<LaboratoryResponse[]>([]); const [projects, setProjects] = useState<ProjectResponse[]>([]); const [categories, setCategories] = useState<EquipmentCategoryResponse[]>([]);
     const [error, setError] = useState<string | null>(null); const [loading, setLoading] = useState(false);
     const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<EquipmentValues>({ resolver: yupResolver(equipmentSchema) });
@@ -23,10 +23,11 @@ export const EquipmentForm = ({ mode, equipmentId }: Props) => {
     const compatibleProjects = useMemo(() => projects.filter(p => !laboratoryId || p.laboratoryId === laboratoryId), [projects, laboratoryId]);
 
     useEffect(() => {
+        if (prefetched) { setEquipment(prefetched); reset({ name: prefetched.name, laboratoryId: prefetched.laboratoryId, projectId: prefetched.projectId, equipmentCategoryId: prefetched.equipmentCategoryId }); }
         const requests: Promise<unknown>[] = [
             laboratoriesServices.list().then(r => setLabs(r.data ?? [])), projectsServices.list().then(r => setProjects(r.data ?? [])), equipmentCategoriesServices.list().then(r => setCategories(r.data ?? [])),
         ];
-        if (mode === 'edit' && equipmentId) requests.push(equipmentsServices.get(equipmentId).then(r => { if (r.data) { setEquipment(r.data); reset({ name: r.data.name, laboratoryId: r.data.laboratoryId, projectId: r.data.projectId, equipmentCategoryId: r.data.equipmentCategoryId }); } }));
+        if (mode === 'edit' && equipmentId && !prefetched) requests.push(equipmentsServices.get(equipmentId).then(r => { if (r.data) { setEquipment(r.data); reset({ name: r.data.name, laboratoryId: r.data.laboratoryId, projectId: r.data.projectId, equipmentCategoryId: r.data.equipmentCategoryId }); } }));
         Promise.all(requests).catch(() => setError('Não foi possível carregar os dados do formulário.'));
     }, [mode, equipmentId, reset]);
 

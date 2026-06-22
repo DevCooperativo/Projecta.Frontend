@@ -4,14 +4,13 @@ import type { ApiResponse } from "../abstractions/apiResponse";
 export interface SigninRequest {
     email: string;
     password: string;
-    profileType: string;
 }
 
 export interface SigninResponse {
-    token: string;
-    id?: number;
-    name?: string;
-    email?: string;
+    id: number;
+    name: string;
+    email: string;
+    profileType:UserProfileType
 }
 
 export interface MeResponse {
@@ -24,4 +23,5 @@ export interface MeResponse {
 export interface IAuthServices {
     signin(data: SigninRequest): Promise<ApiResponse<SigninResponse>>;
     me(): Promise<ApiResponse<MeResponse>>;
+    logout(): Promise<ApiResponse<void>>
 }

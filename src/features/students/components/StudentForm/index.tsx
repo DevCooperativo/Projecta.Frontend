@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { studentCreateSchema, studentEditSchema, type StudentCreateValues, type StudentEditValues } from '@/schemas/students/studentSchema';
 import { studentsServices } from '@/api/students/implementation/studentsServices';
 import type { StudentResponse } from '@/api/students/iStudentsServices';
@@ -20,6 +20,8 @@ interface StudentFormProps {
 
 export const StudentForm = ({ mode, studentId }: StudentFormProps) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const prefetched = (location.state as { student?: StudentResponse } | null)?.student;
     const [student, setStudent] = useState<StudentResponse | null>(null);
     const [serverError, setServerError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -31,21 +33,18 @@ export const StudentForm = ({ mode, studentId }: StudentFormProps) => {
     });
 
     useEffect(() => {
-        if (mode === 'edit' && studentId != null) {
-            studentsServices.get(studentId).then((data) => {
-                setStudent(data);
-                reset({
-                    name: data.name,
-                    email: data.email,
-                    registration: data.registration,
-                    birthdate: data.birthdate,
-                    term: data.term,
-                    shift: data.shift,
-                });
-            }).catch(() => {
-                setServerError('Não foi possível carregar os dados do aluno.');
-            });
+        if (mode !== 'edit' || studentId == null) return;
+        if (prefetched) {
+            setStudent(prefetched);
+            reset({ name: prefetched.name, email: prefetched.email, registration: prefetched.registration, birthdate: prefetched.birthdate, term: prefetched.term, shift: prefetched.shift });
+            return;
         }
+        studentsServices.get(studentId).then((data) => {
+            setStudent(data);
+            reset({ name: data.name, email: data.email, registration: data.registration, birthdate: data.birthdate, term: data.term, shift: data.shift });
+        }).catch(() => {
+            setServerError('Não foi possível carregar os dados do aluno.');
+        });
     }, [mode, studentId, reset]);
 
     const onSubmit = async (data: StudentCreateValues | StudentEditValues) => {

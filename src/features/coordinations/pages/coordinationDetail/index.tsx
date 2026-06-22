@@ -3,8 +3,11 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { coordinationsServices } from '@/api/coordinations/implementation/coordinationsServices';
 import type { CoordinationResponse } from '@/api/coordinations/iCoordinationsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 export const CoordinationDetail = () => {
+    const { user } = useAuth();
+    const isAdmin = user?.profileType === 'admin';
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [coordination, setCoordination] = useState<CoordinationResponse | null>(null);
@@ -57,17 +60,19 @@ export const CoordinationDetail = () => {
                     <h4 className="fw-bold mb-0">{coordination.area}</h4>
                     <span className="badge bg-light text-dark border mt-1">{coordination.block}</span>
                 </div>
-                <div className="d-flex gap-2">
-                    <Link to={`/coordinations/${coordination.id}/edit`} className="btn btn-outline-dark">
-                        Editar
-                    </Link>
-                    <button
-                        className="btn btn-outline-danger"
-                        onClick={() => { setDeleteError(null); setShowModal(true); }}
-                    >
-                        Excluir
-                    </button>
-                </div>
+                {isAdmin && (
+                    <div className="d-flex gap-2">
+                        <Link to={`/coordinations/${coordination.id}/edit`} state={{ coordination }} className="btn btn-outline-dark">
+                            Editar
+                        </Link>
+                        <button
+                            className="btn btn-outline-danger"
+                            onClick={() => { setDeleteError(null); setShowModal(true); }}
+                        >
+                            Excluir
+                        </button>
+                    </div>
+                )}
             </div>
 
             {deleteError && (

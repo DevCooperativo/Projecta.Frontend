@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { KNOWLEDGE_AREAS, type ProjectCategoryResponse } from '@/api/projectCategories/iProjectCategoriesServices';
 import { projectCategoriesServices } from '@/api/projectCategories/implementation/projectCategoriesServices';
 import { projectCategorySchema, type ProjectCategoryValues } from '@/schemas/projectCategories/projectCategorySchema';
@@ -10,6 +10,8 @@ interface Props { mode: 'new' | 'edit'; categoryId?: number }
 
 export const ProjectCategoryForm = ({ mode, categoryId }: Props) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const prefetched = (location.state as { category?: ProjectCategoryResponse } | null)?.category;
     const [category, setCategory] = useState<ProjectCategoryResponse | null>(null);
     const [serverError, setServerError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -19,18 +21,17 @@ export const ProjectCategoryForm = ({ mode, categoryId }: Props) => {
     });
 
     useEffect(() => {
-        if (mode === 'edit' && categoryId) {
-            projectCategoriesServices.get(categoryId).then(response => {
-                if (!response.data) return;
-                setCategory(response.data);
-                reset({
-                    name: response.data.name,
-                    area: response.data.area,
-                    description: response.data.description,
-                    commerciallyRelevant: response.data.commerciallyRelevant,
-                });
-            }).catch(() => setServerError('Não foi possível carregar a categoria.'));
+        if (mode !== 'edit' || !categoryId) return;
+        if (prefetched) {
+            setCategory(prefetched);
+            reset({ name: prefetched.name, area: prefetched.area, description: prefetched.description, commerciallyRelevant: prefetched.commerciallyRelevant });
+            return;
         }
+        projectCategoriesServices.get(categoryId).then(response => {
+            if (!response.data) return;
+            setCategory(response.data);
+            reset({ name: response.data.name, area: response.data.area, description: response.data.description, commerciallyRelevant: response.data.commerciallyRelevant });
+        }).catch(() => setServerError('Não foi possível carregar a categoria.'));
     }, [mode, categoryId, reset]);
 
     const onSubmit = async (values: ProjectCategoryValues) => {

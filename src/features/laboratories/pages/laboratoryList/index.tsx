@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 import { laboratoriesServices } from '@/api/laboratories/implementation/laboratoriesServices';
 import type { LaboratoryResponse } from '@/api/laboratories/iLaboratoriesServices';
 import { professorsServices } from '@/api/professors/implementation/professorsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 const PAGE_SIZE = 10;
 
 export const LaboratoryList = () => {
+    const { user } = useAuth();
+    const canManage = user?.profileType === 'professor';
     const [items, setItems] = useState<LaboratoryResponse[]>([]);
     const [professorNames, setProfessorNames] = useState<Map<number, string>>(new Map());
     const [search, setSearch] = useState('');
@@ -37,7 +40,7 @@ export const LaboratoryList = () => {
         <div className="d-flex justify-content-between align-items-start mb-4"><div>
             <nav><ol className="breadcrumb mb-1 small"><li className="breadcrumb-item"><Link to="/">Início</Link></li><li className="breadcrumb-item active">Laboratórios</li></ol></nav>
             <h4 className="fw-bold mb-0">Laboratórios</h4>
-        </div><Link to="/laboratories/new" className="btn btn-dark">+ Novo laboratório</Link></div>
+        </div>{canManage && <Link to="/laboratories/new" className="btn btn-dark">+ Novo laboratório</Link>}</div>
         <div className="card mb-4"><div className="card-body"><div className="row g-3">
             <div className="col-md-7"><input className="form-control" type="search" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Buscar por nome ou responsável..." /></div>
             <div className="col-md-3"><select className="form-select" value={storageFilter} onChange={e => { setStorageFilter(e.target.value); setPage(1); }}><option value="">Todos</option><option value="true">Com armazenamento</option><option value="false">Sem armazenamento</option></select></div>

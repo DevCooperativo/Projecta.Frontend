@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ProjectCategoryResponse } from '@/api/projectCategories/iProjectCategoriesServices';
 import { projectCategoriesServices } from '@/api/projectCategories/implementation/projectCategoriesServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 const PAGE_SIZE = 10;
 
 export const ProjectCategoryList = () => {
+    const { user } = useAuth(); const canManage = user?.profileType === 'professor';
     const [items, setItems] = useState<ProjectCategoryResponse[]>([]);
     const [search, setSearch] = useState(''); const [area, setArea] = useState(''); const [commercial, setCommercial] = useState(''); const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true); const [error, setError] = useState<string | null>(null);
@@ -18,7 +20,7 @@ export const ProjectCategoryList = () => {
     const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)); const rows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
     const clear = () => { setSearch(''); setArea(''); setCommercial(''); setPage(1); };
     return <>
-        <div className="d-flex justify-content-between align-items-start mb-4"><div><nav><ol className="breadcrumb mb-1 small"><li className="breadcrumb-item"><Link to="/">Início</Link></li><li className="breadcrumb-item active">Categorias de projetos</li></ol></nav><h4 className="fw-bold mb-0">Categorias de projetos</h4></div><Link className="btn btn-dark" to="/project-categories/new">+ Nova categoria</Link></div>
+        <div className="d-flex justify-content-between align-items-start mb-4"><div><nav><ol className="breadcrumb mb-1 small"><li className="breadcrumb-item"><Link to="/">Início</Link></li><li className="breadcrumb-item active">Categorias de projetos</li></ol></nav><h4 className="fw-bold mb-0">Categorias de projetos</h4></div>{canManage && <Link className="btn btn-dark" to="/project-categories/new">+ Nova categoria</Link>}</div>
         <div className="card mb-4"><div className="card-body"><div className="row g-3">
             <div className="col-lg-5"><input type="search" className="form-control" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} placeholder="Buscar por nome ou descrição..." /></div>
             <div className="col-lg-3"><select className="form-select" value={area} onChange={e => { setArea(e.target.value); setPage(1); }}><option value="">Todas as áreas</option>{areas.map(a => <option key={a} value={a}>{a}</option>)}</select></div>

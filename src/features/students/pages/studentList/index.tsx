@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Avatar } from '@/components/Avatar';
 import { studentsServices } from '@/api/students/implementation/studentsServices';
 import type { StudentResponse } from '@/api/students/iStudentsServices';
+import { useAuth } from '@/context/auth/useAuth';
 
 const PAGE_SIZE = 10;
 
@@ -14,6 +15,8 @@ const SHIFT_LABELS: Record<string, string> = {
 };
 
 export const StudentList = () => {
+    const { user } = useAuth();
+    const isAdmin = user?.profileType === 'admin';
     const [students, setStudents] = useState<StudentResponse[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -57,9 +60,11 @@ export const StudentList = () => {
                     </nav>
                     <h4 className="fw-bold mb-0">Alunos</h4>
                 </div>
-                <Link to="/students/new" className="btn btn-dark">
-                    + Novo aluno
-                </Link>
+                {isAdmin && (
+                    <Link to="/students/new" className="btn btn-dark">
+                        + Novo aluno
+                    </Link>
+                )}
             </div>
 
             <div className="card mb-4">

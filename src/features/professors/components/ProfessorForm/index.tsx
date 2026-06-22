@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { professorCreateSchema, professorEditSchema, type ProfessorCreateValues, type ProfessorEditValues } from '@/schemas/professors/professorSchema';
 import { professorsServices } from '@/api/professors/implementation/professorsServices';
 import type { ProfessorResponse } from '@/api/professors/iProfessorsServices';
@@ -14,6 +14,8 @@ interface ProfessorFormProps {
 
 export const ProfessorForm = ({ mode, professorId }: ProfessorFormProps) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const prefetched = (location.state as { professor?: ProfessorResponse } | null)?.professor;
     const [professor, setProfessor] = useState<ProfessorResponse | null>(null);
     const [serverError, setServerError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -25,19 +27,18 @@ export const ProfessorForm = ({ mode, professorId }: ProfessorFormProps) => {
     });
 
     useEffect(() => {
-        if (mode === 'edit' && professorId != null) {
-            professorsServices.get(professorId).then((data) => {
-                setProfessor(data);
-                reset({
-                    name: data.name,
-                    registration: data.registration,
-                    telephone: data.telephone,
-                    coordinationId: data.coordinationId,
-                });
-            }).catch(() => {
-                setServerError('Não foi possível carregar os dados do professor.');
-            });
+        if (mode !== 'edit' || professorId == null) return;
+        if (prefetched) {
+            setProfessor(prefetched);
+            reset({ name: prefetched.name, registration: prefetched.registration, telephone: prefetched.telephone, coordinationId: prefetched.coordinationId });
+            return;
         }
+        professorsServices.get(professorId).then((data) => {
+            setProfessor(data);
+            reset({ name: data.name, registration: data.registration, telephone: data.telephone, coordinationId: data.coordinationId });
+        }).catch(() => {
+            setServerError('Não foi possível carregar os dados do professor.');
+        });
     }, [mode, professorId, reset]);
 
     const onSubmit = async (data: ProfessorCreateValues | ProfessorEditValues) => {
