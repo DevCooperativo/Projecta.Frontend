@@ -36,7 +36,7 @@ export const BorrowClose = () => {
         );
     }
 
-    if (borrow.status === 'completed') {
+    if (!borrow.isStillBorrowed) {
         return (
             <div className="text-center py-5 text-muted">
                 Este empréstimo já foi encerrado.{' '}

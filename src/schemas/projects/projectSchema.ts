@@ -5,7 +5,7 @@ export const projectCreateSchema = object({
     description: string().required('Descrição é obrigatória').min(10, 'Mínimo 10 caracteres').max(500, 'Máximo 500 caracteres'),
     startDate: string().required('Data de início é obrigatória'),
     endDate: string().optional(),
-    status: string().required('Status é obrigatório').oneOf(['active', 'completed', 'inactive'], 'Status inválido'),
+    status: string().required('Status é obrigatório').min(1, 'Status é obrigatório'),
     laboratoryId: number().typeError('Laboratório inválido').required('Laboratório é obrigatório').positive('Selecione um laboratório'),
     projectCategoryId: number().typeError('Categoria inválida').required('Categoria é obrigatória').positive('Selecione uma categoria'),
 });

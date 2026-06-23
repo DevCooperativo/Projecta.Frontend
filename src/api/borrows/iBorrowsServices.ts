@@ -14,7 +14,7 @@ export interface BorrowResponse {
     professor: BorrowBorrower | null;
     expectedReturnDate?: string;
     completionDate?: string | null;
-    status: 'pending' | 'completed';
+    isStillBorrowed: boolean;
     notes?: string;
 }
 

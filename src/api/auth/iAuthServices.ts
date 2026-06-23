@@ -20,8 +20,16 @@ export interface MeResponse {
     profileType: UserProfileType
 }
 
+export interface UpdateMeRequest {
+    name?: string;
+    birthdate?: string;
+    registration?: string;
+    telephone?: string;
+}
+
 export interface IAuthServices {
     signin(data: SigninRequest): Promise<ApiResponse<SigninResponse>>;
     me(): Promise<ApiResponse<MeResponse>>;
-    logout(): Promise<ApiResponse<void>>
+    updateMe(data: UpdateMeRequest): Promise<ApiResponse<MeResponse>>;
+    logout(): Promise<ApiResponse<void>>;
 }
