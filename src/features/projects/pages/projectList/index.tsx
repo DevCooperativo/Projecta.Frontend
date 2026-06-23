@@ -11,11 +11,6 @@ import { StatusBadge } from '@/components/StatusBadge';
 
 const PAGE_SIZE = 10;
 
-const STATUS_OPTIONS = [
-    { value: 'active', label: 'Em andamento' },
-    { value: 'completed', label: 'Concluído' },
-    { value: 'inactive', label: 'Inativo' },
-];
 
 export const ProjectList = () => {
     const { user } = useAuth();
@@ -52,7 +47,7 @@ export const ProjectList = () => {
             (q === '' || p.name.toLowerCase().includes(q)) &&
             (categoryFilter === '' || p.projectCategoryId === Number(categoryFilter)) &&
             (labFilter === '' || p.laboratoryId === Number(labFilter)) &&
-            (statusFilter === '' || p.status === statusFilter)
+            (statusFilter === '' || p.status.toLowerCase().includes(statusFilter.toLowerCase()))
         );
     }, [projects, search, categoryFilter, labFilter, statusFilter]);
 
@@ -114,16 +109,13 @@ export const ProjectList = () => {
                             </select>
                         </div>
                         <div className="col-md-2">
-                            <select
-                                className="form-select"
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Filtrar por status..."
                                 value={statusFilter}
                                 onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-                            >
-                                <option value="">Todos os status</option>
-                                {STATUS_OPTIONS.map(s => (
-                                    <option key={s.value} value={s.value}>{s.label}</option>
-                                ))}
-                            </select>
+                            />
                         </div>
                         <div className="col-md-2 d-flex align-items-center">
                             <button className="btn btn-outline-secondary w-100 text-nowrap" onClick={clearFilters}>

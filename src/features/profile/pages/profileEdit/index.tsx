@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { object, string, number } from 'yup';
+import { object, string } from 'yup';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useAuth } from '@/context/auth/useAuth';
-import { administratorsServices } from '@/api/administrators/implementation/administratorsServices';
+import { authServices } from '@/api/auth/implementation/authServices';
 import { professorsServices } from '@/api/professors/implementation/professorsServices';
 import { studentsServices } from '@/api/students/implementation/studentsServices';
 import { userUpdateProfile } from '@/state/userSlice';
@@ -13,10 +13,10 @@ import type { AppDispatch } from '@/state/store';
 
 // ─── Admin ───────────────────────────────────────────────────────────────────
 
-interface AdminValues { email: string }
-const adminSchema = object({ email: string().email('E-mail inválido').required('E-mail é obrigatório') });
+interface AdminValues { name: string }
+const adminSchema = object({ name: string().required('Nome é obrigatório') });
 
-function AdminEditForm({ userId }: { userId: number }) {
+function AdminEditForm() {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useAuth();
@@ -28,15 +28,15 @@ function AdminEditForm({ userId }: { userId: number }) {
     });
 
     useEffect(() => {
-        if (user?.email) reset({ email: user.email });
+        if (user?.name) reset({ name: user.name });
     }, [user, reset]);
 
     const onSubmit = async (data: AdminValues) => {
         setServerError(null);
         setLoading(true);
         try {
-            await administratorsServices.update(userId, { email: data.email });
-            dispatch(userUpdateProfile({ email: data.email }));
+            await authServices.updateMe({ name: data.name });
+            dispatch(userUpdateProfile({ name: data.name }));
             navigate('/profile');
         } catch {
             setServerError('Não foi possível salvar as alterações. Tente novamente.');
@@ -52,16 +52,17 @@ function AdminEditForm({ userId }: { userId: number }) {
                     <div className="card">
                         <div className="card-body p-4">
                             <h6 className="fw-semibold mb-3">Dados do perfil</h6>
+                            {serverError && <div className="alert alert-danger">{serverError}</div>}
                             <div className="row g-3">
                                 <div className="col-md-8">
-                                    <label className="form-label" htmlFor="email">E-mail</label>
+                                    <label className="form-label" htmlFor="name">Nome</label>
                                     <input
-                                        {...register('email')}
-                                        id="email"
-                                        type="email"
-                                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                                        {...register('name')}
+                                        id="name"
+                                        type="text"
+                                        className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                                     />
-                                    {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
+                                    {errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
                                 </div>
                             </div>
                         </div>
@@ -124,7 +125,7 @@ function ProfessorEditForm({ userId }: { userId: number }) {
         setServerError(null);
         setLoading(true);
         try {
-            await professorsServices.update(userId, data);
+            await authServices.updateMe({ name: data.name, registration: data.registration, telephone: data.telephone });
             dispatch(userUpdateProfile({ name: data.name }));
             navigate('/profile');
         } catch {
@@ -141,6 +142,7 @@ function ProfessorEditForm({ userId }: { userId: number }) {
                     <div className="card">
                         <div className="card-body p-4">
                             <h6 className="fw-semibold mb-3">Dados do perfil</h6>
+                            {serverError && <div className="alert alert-danger">{serverError}</div>}
                             <div className="row g-3">
                                 <div className="col-12">
                                     <label className="form-label" htmlFor="name">Nome</label>
@@ -204,14 +206,10 @@ function ProfessorEditForm({ userId }: { userId: number }) {
 
 // ─── Student ──────────────────────────────────────────────────────────────────
 
-interface StudentValues { name: string; email: string; registration: string; birthdate: string; term: number; shift: string }
+interface StudentValues { name: string; birthdate: string }
 const studentSchema = object({
     name: string().required('Nome é obrigatório'),
-    email: string().email('E-mail inválido').required('E-mail é obrigatório'),
-    registration: string().required('Matrícula é obrigatória'),
     birthdate: string().required('Data de nascimento é obrigatória'),
-    term: number().typeError('Período deve ser um número').required('Período é obrigatório').min(1, 'Período inválido'),
-    shift: string().required('Turno é obrigatório'),
 });
 
 function StudentEditForm({ userId }: { userId: number }) {
@@ -227,10 +225,7 @@ function StudentEditForm({ userId }: { userId: number }) {
     useEffect(() => {
         studentsServices.get(userId)
             .then(res => {
-                if (res.data) {
-                    const s = res.data;
-                    reset({ name: s.name, email: s.email, registration: s.registration, birthdate: s.birthdate, term: s.term, shift: s.shift });
-                }
+                if (res.data) reset({ name: res.data.name, birthdate: res.data.birthdate });
             })
             .catch(() => {});
     }, [userId, reset]);
@@ -239,8 +234,8 @@ function StudentEditForm({ userId }: { userId: number }) {
         setServerError(null);
         setLoading(true);
         try {
-            await studentsServices.update(userId, data);
-            dispatch(userUpdateProfile({ name: data.name, email: data.email }));
+            await authServices.updateMe({ name: data.name, birthdate: data.birthdate });
+            dispatch(userUpdateProfile({ name: data.name }));
             navigate('/profile');
         } catch {
             setServerError('Não foi possível salvar as alterações. Tente novamente.');
@@ -256,6 +251,7 @@ function StudentEditForm({ userId }: { userId: number }) {
                     <div className="card">
                         <div className="card-body p-4">
                             <h6 className="fw-semibold mb-3">Dados do perfil</h6>
+                            {serverError && <div className="alert alert-danger">{serverError}</div>}
                             <div className="row g-3">
                                 <div className="col-12">
                                     <label className="form-label" htmlFor="name">Nome</label>
@@ -268,26 +264,6 @@ function StudentEditForm({ userId }: { userId: number }) {
                                     {errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
                                 </div>
                                 <div className="col-md-6">
-                                    <label className="form-label" htmlFor="email">E-mail</label>
-                                    <input
-                                        {...register('email')}
-                                        id="email"
-                                        type="email"
-                                        className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                                    />
-                                    {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
-                                </div>
-                                <div className="col-md-6">
-                                    <label className="form-label" htmlFor="registration">Matrícula</label>
-                                    <input
-                                        {...register('registration')}
-                                        id="registration"
-                                        type="text"
-                                        className={`form-control ${errors.registration ? 'is-invalid' : ''}`}
-                                    />
-                                    {errors.registration && <div className="invalid-feedback">{errors.registration.message}</div>}
-                                </div>
-                                <div className="col-md-6">
                                     <label className="form-label" htmlFor="birthdate">Data de nascimento</label>
                                     <input
                                         {...register('birthdate')}
@@ -296,31 +272,6 @@ function StudentEditForm({ userId }: { userId: number }) {
                                         className={`form-control ${errors.birthdate ? 'is-invalid' : ''}`}
                                     />
                                     {errors.birthdate && <div className="invalid-feedback">{errors.birthdate.message}</div>}
-                                </div>
-                                <div className="col-md-3">
-                                    <label className="form-label" htmlFor="term">Período</label>
-                                    <input
-                                        {...register('term', { valueAsNumber: true })}
-                                        id="term"
-                                        type="number"
-                                        min={1}
-                                        className={`form-control ${errors.term ? 'is-invalid' : ''}`}
-                                    />
-                                    {errors.term && <div className="invalid-feedback">{errors.term.message}</div>}
-                                </div>
-                                <div className="col-md-3">
-                                    <label className="form-label" htmlFor="shift">Turno</label>
-                                    <select
-                                        {...register('shift')}
-                                        id="shift"
-                                        className={`form-select ${errors.shift ? 'is-invalid' : ''}`}
-                                    >
-                                        <option value="">Selecione</option>
-                                        <option value="morning">Manhã</option>
-                                        <option value="afternoon">Tarde</option>
-                                        <option value="night">Noite</option>
-                                    </select>
-                                    {errors.shift && <div className="invalid-feedback">{errors.shift.message}</div>}
                                 </div>
                             </div>
                         </div>
@@ -373,7 +324,7 @@ export const ProfileEdit = () => {
                     <h4 className="fw-bold mb-0">Editar perfil</h4>
                 </div>
             </div>
-            {user.profileType === 'admin' && <AdminEditForm userId={user.id} />}
+            {user.profileType === 'admin' && <AdminEditForm />}
             {user.profileType === 'professor' && <ProfessorEditForm userId={user.id} />}
             {user.profileType === 'student' && <StudentEditForm userId={user.id} />}
         </>

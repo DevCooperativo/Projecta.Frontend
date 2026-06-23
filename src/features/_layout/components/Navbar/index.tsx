@@ -53,7 +53,7 @@ export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
                 </div>
 
                 <ul className="navbar-nav ms-auto">
-                    <li className={`nav-item dropdown${menuOpen ? ' show' : ''}`} ref={menuRef}>
+                    <li className={`nav-item dropdown${menuOpen ? ' show' : ''}`} ref={menuRef} style={{ position: 'relative' }}>
                         <a
                             className="nav-link dropdown-toggle"
                             href="#"
@@ -63,7 +63,7 @@ export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
                         >
                             {profileName}
                         </a>
-                        <ul className={`dropdown-menu dropdown-menu-end${menuOpen ? ' show' : ''}`}>
+                        <ul className={`dropdown-menu dropdown-menu-end${menuOpen ? ' show' : ''}`} style={{ position: 'absolute', top: '100%', right: 0 }}>
                             <li>
                                 <NavLink className="dropdown-item" to="/profile" onClick={() => setMenuOpen(false)}>
                                     Perfil

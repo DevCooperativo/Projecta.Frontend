@@ -54,13 +54,15 @@ export const BorrowDetail = () => {
                     </nav>
                     <h4 className="fw-bold mb-0">Empréstimo #{borrow.id}</h4>
                 </div>
-                {borrow.status === 'pending' && (
+                {borrow.isStillBorrowed && (
                     <div className="d-flex gap-2">
-                        <Link to={`/borrows/${borrow.id}/edit`} state={{ borrow }} className="btn btn-outline-dark">
-                            Editar
-                        </Link>
+                        {isAdmin && (
+                            <Link to={`/borrows/${borrow.id}/edit`} state={{ borrow }} className="btn btn-outline-dark">
+                                Editar
+                            </Link>
+                        )}
                         <Link to={`/borrows/${borrow.id}/close`} className="btn btn-dark">
-                            Encerrar
+                            {isAdmin ? 'Encerrar' : 'Devolver'}
                         </Link>
                     </div>
                 )}
@@ -116,7 +118,7 @@ export const BorrowDetail = () => {
                     <div className="card">
                         <div className="card-body p-4">
                             <h6 className="fw-semibold mb-3">Status</h6>
-                            <StatusBadge status={borrow.status} />
+                            <StatusBadge status={borrow.isStillBorrowed ? 'pending' : 'completed'} />
                         </div>
                     </div>
                 </div>

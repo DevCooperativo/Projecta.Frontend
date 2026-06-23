@@ -59,12 +59,6 @@ interface ProjectFormProps {
     projectId?: number;
 }
 
-const STATUS_OPTIONS = [
-    { value: 'active', label: 'Em andamento' },
-    { value: 'completed', label: 'Concluído' },
-    { value: 'inactive', label: 'Inativo' },
-];
-
 export const ProjectForm = ({ mode, projectId }: ProjectFormProps) => {
     const navigate = useNavigate();
     const [project, setProject] = useState<ProjectResponse | null>(null);
@@ -83,7 +77,6 @@ export const ProjectForm = ({ mode, projectId }: ProjectFormProps) => {
     const { register, handleSubmit, reset, formState: { errors } } =
         useForm<ProjectCreateValues | ProjectEditValues>({
             resolver: yupResolver(schema) as Resolver<ProjectCreateValues | ProjectEditValues>,
-            defaultValues: { status: 'active' },
         });
 
     useEffect(() => {
@@ -382,22 +375,14 @@ export const ProjectForm = ({ mode, projectId }: ProjectFormProps) => {
                         <div className="card">
                             <div className="card-body p-4">
                                 <h6 className="fw-semibold mb-3">Configurações</h6>
-                                <label className="form-label">Status</label>
-                                {STATUS_OPTIONS.map(s => (
-                                    <div className="form-check" key={s.value}>
-                                        <input
-                                            {...register('status')}
-                                            className="form-check-input"
-                                            type="radio"
-                                            value={s.value}
-                                            id={`status-${s.value}`}
-                                        />
-                                        <label className="form-check-label" htmlFor={`status-${s.value}`}>
-                                            {s.label}
-                                        </label>
-                                    </div>
-                                ))}
-                                {errors.status && <div className="text-danger small mt-1">{errors.status.message}</div>}
+                                <label className="form-label" htmlFor="status">Status</label>
+                                <input
+                                    {...register('status')}
+                                    id="status"
+                                    type="text"
+                                    className={`form-control ${errors.status ? 'is-invalid' : ''}`}
+                                />
+                                {errors.status && <div className="invalid-feedback">{errors.status.message}</div>}
                             </div>
                             <div className="card-footer bg-white d-flex flex-column gap-2">
                                 <button type="submit" className="btn btn-dark w-100" disabled={loading}>

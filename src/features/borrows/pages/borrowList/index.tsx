@@ -43,7 +43,7 @@ export const BorrowList = () => {
         return borrows.filter(b =>
             (q === '' || (b.equipmentName ?? '').toLowerCase().includes(q) || (b.professor?.name ?? b.student?.name ?? '').toLowerCase().includes(q)) &&
             (borrowerTypeFilter === '' || (borrowerTypeFilter === 'professor' ? b.professor != null : b.student != null)) &&
-            (statusFilter === '' || b.status === statusFilter)
+            (statusFilter === '' || (statusFilter === 'pending' ? b.isStillBorrowed : !b.isStillBorrowed))
         );
     }, [borrows, search, borrowerTypeFilter, statusFilter]);
 
@@ -169,7 +169,7 @@ export const BorrowList = () => {
                                 </tr>
                             ) : (
                                 paginated.map(b => {
-                                    const overdue = b.status === 'pending' && b.expectedReturnDate != null && b.expectedReturnDate < today;
+                                    const overdue = b.isStillBorrowed && b.expectedReturnDate != null && b.expectedReturnDate < today;
                                     return (
                                         <tr key={b.id}>
                                             <td className="align-middle">{b.equipmentName ?? `Equipamento #${b.equipmentId}`}</td>
@@ -192,7 +192,7 @@ export const BorrowList = () => {
                                                     </>
                                                 ) : '—'}
                                             </td>
-                                            <td className="align-middle"><StatusBadge status={b.status} /></td>
+                                            <td className="align-middle"><StatusBadge status={b.isStillBorrowed ? 'pending' : 'completed'} /></td>
                                             <td className="align-middle text-end">
                                                 {(() => {
                                                     const isAdmin = user?.profileType === 'admin';
@@ -205,9 +205,9 @@ export const BorrowList = () => {
                                                                     Ver
                                                                 </Link>
                                                             )}
-                                                            {canAccess && b.status === 'pending' && (
+                                                            {canAccess && b.isStillBorrowed && (
                                                                 <Link to={`/borrows/${b.id}/close`} className="btn btn-sm btn-outline-dark">
-                                                                    Encerrar
+                                                                    {isAdmin ? 'Encerrar' : 'Devolver'}
                                                                 </Link>
                                                             )}
                                                         </div>
