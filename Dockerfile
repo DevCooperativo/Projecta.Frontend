@@ -1,17 +1,17 @@
 # Stage 1 — build
-FROM node:22-alpine AS builder
+FROM oven/bun:1-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+COPY package.json bun.lock* ./
+RUN bun install --frozen-lockfile
 
 COPY . .
 
 ARG VITE_BACKEND_URI
 ENV VITE_BACKEND_URI=$VITE_BACKEND_URI
 
-RUN npm run build
+RUN bun run build
 
 # Stage 2 — serve
 FROM nginx:1.27-alpine AS runner
