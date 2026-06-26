@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { researcherSchema, type ResearcherValues } from '@/schemas/researchers/researcherSchema';
 import { professorsServices } from '@/api/professors/implementation/professorsServices';
@@ -29,7 +29,7 @@ export const AddResearcherModal = ({ show, onClose, onAdd }: AddResearcherModalP
     const [selectedName, setSelectedName] = useState('');
 
     const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<ResearcherValues>({
-        resolver: yupResolver(researcherSchema),
+        resolver: yupResolver(researcherSchema) as unknown as Resolver<ResearcherValues>,
         defaultValues: { personType: 'professor' },
     });
 

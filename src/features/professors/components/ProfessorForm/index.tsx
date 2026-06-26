@@ -33,7 +33,8 @@ export const ProfessorForm = ({ mode, professorId }: ProfessorFormProps) => {
             reset({ name: prefetched.name, registration: prefetched.registration, telephone: prefetched.telephone, coordinationId: prefetched.coordinationId });
             return;
         }
-        professorsServices.get(professorId).then((data) => {
+        professorsServices.get(professorId).then((res) => {
+            const data = res.data!;
             setProfessor(data);
             reset({ name: data.name, registration: data.registration, telephone: data.telephone, coordinationId: data.coordinationId });
         }).catch(() => {
