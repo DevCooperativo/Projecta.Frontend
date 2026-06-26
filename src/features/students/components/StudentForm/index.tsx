@@ -36,12 +36,13 @@ export const StudentForm = ({ mode, studentId }: StudentFormProps) => {
         if (mode !== 'edit' || studentId == null) return;
         if (prefetched) {
             setStudent(prefetched);
-            reset({ name: prefetched.name, email: prefetched.email, registration: prefetched.registration, birthdate: prefetched.birthdate, term: prefetched.term, shift: prefetched.shift });
+            reset({ name: prefetched.name, email: prefetched.email, registration: prefetched.registration, birthdate: prefetched.birthdate, term: prefetched.term, shift: prefetched.shift as StudentEditValues['shift'] });
             return;
         }
-        studentsServices.get(studentId).then((data) => {
+        studentsServices.get(studentId).then((res) => {
+            const data = res.data!;
             setStudent(data);
-            reset({ name: data.name, email: data.email, registration: data.registration, birthdate: data.birthdate, term: data.term, shift: data.shift });
+            reset({ name: data.name, email: data.email, registration: data.registration, birthdate: data.birthdate, term: data.term, shift: data.shift as StudentEditValues['shift'] });
         }).catch(() => {
             setServerError('Não foi possível carregar os dados do aluno.');
         });
