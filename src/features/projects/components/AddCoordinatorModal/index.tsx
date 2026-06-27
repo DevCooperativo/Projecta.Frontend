@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { coordinatorSchema, type CoordinatorValues } from '@/schemas/coordinators/coordinatorSchema';
 import { professorsServices } from '@/api/professors/implementation/professorsServices';
@@ -25,7 +25,7 @@ export const AddCoordinatorModal = ({ show, onClose, onAdd }: AddCoordinatorModa
     const [selectedProfessor, setSelectedProfessor] = useState<ProfessorResponse | null>(null);
 
     const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<CoordinatorValues>({
-        resolver: yupResolver(coordinatorSchema),
+        resolver: yupResolver(coordinatorSchema) as unknown as Resolver<CoordinatorValues>,
     });
 
     const watchedProfessorId = watch('professorId');
