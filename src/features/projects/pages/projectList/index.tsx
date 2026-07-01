@@ -87,7 +87,7 @@ export const ProjectList = () => {
             <div className="card mb-4">
                 <div className="card-body">
                     <div className="row g-3">
-                        <div className="col-md-5">
+                        <div className="col-md-4">
                             <input
                                 type="text"
                                 className="form-control"
@@ -96,7 +96,7 @@ export const ProjectList = () => {
                                 onChange={e => { setSearch(e.target.value); setPage(1); }}
                             />
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-md-2">
                             <select
                                 className="form-select"
                                 value={categoryFilter}
@@ -105,6 +105,18 @@ export const ProjectList = () => {
                                 <option value="">Todas as categorias</option>
                                 {categories.map(c => (
                                     <option key={c.id} value={c.id}>{c.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="col-md-2">
+                            <select
+                                className="form-select"
+                                value={labFilter}
+                                onChange={e => { setLabFilter(e.target.value); setPage(1); }}
+                            >
+                                <option value="">Todos os laboratórios</option>
+                                {laboratories.map(l => (
+                                    <option key={l.id} value={l.id}>{l.name}</option>
                                 ))}
                             </select>
                         </div>
